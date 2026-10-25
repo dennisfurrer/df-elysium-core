@@ -98,7 +98,7 @@ Each runs against Elysium testnet. The ones that move funds sign with `ELYSIUM_T
 
 ## Reference app
 
-[`packages/core/examples/reference-app`](packages/core/examples/reference-app) is all of the above in one page in the browser: Leptos client side, the SDK over `fetch`, a burner key or the browser's wallet. Live at **https://elysium-sdk-app.builder.markets**. To run it locally:
+`packages/core/examples/reference-app` is all of the above in one page in the browser: Leptos client side, the SDK over `fetch`, a burner key or the browser's wallet. Live at **https://elysium-sdk-app.builder.markets**. To run it locally:
 
 ```sh
 rustup target add wasm32-unknown-unknown
