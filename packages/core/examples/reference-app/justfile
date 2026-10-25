@@ -11,6 +11,12 @@ build:
 serve: build
     python3 -m http.server 8080 --directory dist
 
+# A clean build, deployed to Cloudflare Pages: https://elysium-sdkrefapp-testnet.hype.st
+deploy:
+    rm -rf dist
+    just build
+    wrangler pages deploy dist --project-name=elysium-sdkrefapp-testnet --branch=main
+
 check:
     cargo fmt --check
     cargo clippy --target wasm32-unknown-unknown -- -D warnings

@@ -2,6 +2,8 @@
 
 Every part of df-elysium-core in one page, in the browser, on Elysium testnet. Leptos renders it client side; the SDK reads and sends through `fetch` (the `web` feature), straight to Kinetiq's node, HyperEVM's node and Conduit's Sourcify. No server, no bundler, no JavaScript dependencies.
 
+Live at **https://elysium-sdkrefapp-testnet.hype.st**.
+
 ## Run it
 
 Once, the tools:
@@ -19,7 +21,7 @@ cd packages/core/examples/reference-app
 just serve
 ```
 
-Open http://localhost:8080. `just serve` builds into `dist/` and serves it with `python3 -m http.server`; stop it with Ctrl-C. `just build` builds without serving; `dist/` is a static site any host can serve.
+Open http://localhost:8080. `just serve` builds into `dist/` and serves it with `python3 -m http.server`; stop it with Ctrl-C. `just build` builds without serving; `dist/` is a static site any host can serve. `just deploy` builds it clean and deploys it to the Cloudflare Pages project `elysium-sdkrefapp-testnet`, behind the live URL.
 
 In the page:
 
