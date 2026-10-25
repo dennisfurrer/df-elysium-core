@@ -2,11 +2,30 @@
 
 Every part of df-elysium-core in one page, in the browser, on Elysium testnet. Leptos renders it client side; the SDK reads and sends through `fetch` (the `web` feature), straight to Kinetiq's node, HyperEVM's node and Conduit's Sourcify. No server, no bundler, no JavaScript dependencies.
 
+## Run it
+
+Once, the tools:
+
 ```sh
-just serve    # builds into dist/ and serves it on http://localhost:8080
+rustup target add wasm32-unknown-unknown
+cargo install wasm-bindgen-cli --version 0.2.129
+brew install just binaryen    # binaryen's wasm-opt shrinks the build; it is skipped when missing
 ```
 
-Needs the `wasm32-unknown-unknown` target, `wasm-bindgen-cli` 0.2.129 (`cargo install wasm-bindgen-cli --version 0.2.129`) and `wasm-opt` from binaryen. `dist/` is a static site.
+Then, from the repo root:
+
+```sh
+cd packages/core/examples/reference-app
+just serve
+```
+
+Open http://localhost:8080. `just serve` builds into `dist/` and serves it with `python3 -m http.server`; stop it with Ctrl-C. `just build` builds without serving; `dist/` is a static site any host can serve.
+
+In the page:
+
+1. Account: press **New burner key** (or **Connect wallet**).
+2. Fund it: **Faucet** opens Kinetiq's testnet faucet for HYPE on Elysium; the account's address is the first row of the panel.
+3. Every panel now reads and sends from that account. Bridging in, retryable tickets and claims pay gas on HyperEVM, so they also need HYPE on HyperEVM testnet.
 
 ## Panels
 

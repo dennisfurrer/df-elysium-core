@@ -98,7 +98,15 @@ Each runs against Elysium testnet. The ones that move funds sign with `ELYSIUM_T
 
 ## Reference app
 
-[`packages/core/examples/reference-app`](packages/core/examples/reference-app) is all of the above in one page in the browser: Leptos client side, the SDK over `fetch`, a burner key or the browser's wallet. `just serve` there builds it and serves it on http://localhost:8080.
+[`packages/core/examples/reference-app`](packages/core/examples/reference-app) is all of the above in one page in the browser: Leptos client side, the SDK over `fetch`, a burner key or the browser's wallet. To run it:
+
+```sh
+rustup target add wasm32-unknown-unknown
+cargo install wasm-bindgen-cli --version 0.2.129
+brew install just binaryen
+cd packages/core/examples/reference-app
+just serve    # then open http://localhost:8080
+```
 
 ## Tests
 
