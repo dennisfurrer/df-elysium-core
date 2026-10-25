@@ -121,6 +121,11 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--s2);
+  color: var(--text);
+}
+
+.brand:hover {
+  text-decoration: none;
 }
 
 .brand-name {
@@ -146,30 +151,63 @@ a:hover {
   white-space: nowrap;
 }
 
-/* Panels flow into columns: one at 375px, two from 768px, three from 1200px. */
+/* Screens: the home screen's cards, one column at 375px, two from 768px, three from 1200px; a
+   tool alone, at most 640px wide. */
 
-.grid {
+main {
   max-width: 1440px;
   margin: 0 auto;
   padding: var(--s4);
-  column-gap: var(--s3);
+}
+
+.hidden {
+  display: none;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s3);
 }
 
 @media (min-width: 768px) {
-  .grid {
-    columns: 2;
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1200px) {
-  .grid {
-    columns: 3;
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
+.tool {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control);
+  margin-bottom: var(--s2);
+  color: var(--text-muted);
+  font-size: var(--t-value);
+}
+
+.back::before {
+  content: "<";
+  margin-right: var(--s2);
+  font-family: var(--font-mono);
+}
+
+.back:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
 .panel {
-  break-inside: avoid;
-  margin-bottom: var(--s3);
   background: var(--bg-panel);
   border: 1px solid var(--border-hairline);
   border-radius: var(--r-panel);
@@ -199,6 +237,22 @@ a:hover {
   flex-direction: column;
   gap: var(--s2);
   padding: var(--s3);
+}
+
+/* A card fills its grid row; its entry points sit at the bottom. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card .panel-body {
+  flex: 1;
+}
+
+.card .actions {
+  margin-top: auto;
+  padding-top: var(--s2);
 }
 
 .part {

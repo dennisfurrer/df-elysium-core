@@ -5,8 +5,9 @@ use df_elysium_core::{Address, Dec};
 use leptos::prelude::*;
 
 use crate::net::{Account, Chain, NETWORK};
+use crate::route::{Route, go};
 use crate::state::{Ctx, Out, Status, poll, problem, run, text};
-use crate::ui::{Actions, AddressLink, Field, Panel, Row, StatusLine};
+use crate::ui::{Actions, AddressLink, Card, Entry, Field, Panel, Row, StatusLine};
 use crate::{keys, wallet};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -25,24 +26,16 @@ async fn holdings(me: Address) -> Out<Holdings> {
     })
 }
 
+/// The account on the home screen: who signs, what it holds, and the ways to set it.
 #[component]
-pub fn AccountPanel(ctx: Ctx) -> impl IntoView {
-    let held = poll(ctx, move || ctx.me().map(holdings));
-    let secret = RwSignal::new(String::new());
+pub fn AccountCard(ctx: Ctx) -> impl IntoView {
+    let held = poll(ctx, Some(Route::Home), move || ctx.me().map(holdings));
     let status = RwSignal::new(Status::Idle);
 
     let make = move |_| match keys::generate() {
         Ok(burner) => {
             ctx.account.set(Some(Account::Burner(burner)));
-            status.set(Status::Done("a new burner key, kept in this browser".to_owned()));
-        }
-        Err(error) => status.set(Status::Failed(error.to_string())),
-    };
-    let import = move |_| match keys::import(&secret.get_untracked()) {
-        Ok(burner) => {
-            secret.set(String::new());
-            ctx.account.set(Some(Account::Burner(burner)));
-            status.set(Status::Done("key imported, kept in this browser".to_owned()));
+            status.set(Status::Done("a new burner key, kept in this browser: fund it from the faucet".to_owned()));
         }
         Err(error) => status.set(Status::Failed(error.to_string())),
     };
@@ -70,20 +63,17 @@ pub fn AccountPanel(ctx: Ctx) -> impl IntoView {
         ctx.account.set(None);
         status.set(Status::Idle);
     };
+    let sent = move || ctx.activity.with(Vec::len);
 
     view! {
-        <Panel title="Account">
+        <Card title="Account" note="Signs everything on this page: a burner key kept in this browser, or your wallet.">
             {move || match ctx.account.get() {
                 None => {
                     view! {
-                        <p class="note">"Sign with a burner key held in this page, or with the browser's wallet."</p>
                         <Actions>
                             <button class="button primary" on:click=make>"New burner key"</button>
                             <button class="button" on:click=connect disabled=!wallet::present()>"Connect wallet"</button>
-                        </Actions>
-                        <Field label="Import a key" value=secret placeholder="0x... testnet only" secret=true />
-                        <Actions>
-                            <button class="button" on:click=import>"Import"</button>
+                            <Entry route=Route::Import label="Import a key" />
                         </Actions>
                     }
                         .into_any()
@@ -102,7 +92,7 @@ pub fn AccountPanel(ctx: Ctx) -> impl IntoView {
                         {problem(held)}
                         <Actions>
                             <a class="button" href=NETWORK.faucet_url() target="_blank" rel="noopener">"Faucet"</a>
-                            <a class="button" href=NETWORK.bridge_url() target="_blank" rel="noopener">"Kinetiq bridge"</a>
+                            <a class="button" href=Route::Activity.href()>{move || format!("Activity ({})", sent())}</a>
                             {burner.then(|| view! { <button class="button" on:click=copy>"Copy key"</button> })}
                             <button class="button" on:click=forget>{if burner { "Forget key" } else { "Disconnect" }}</button>
                         </Actions>
@@ -110,6 +100,33 @@ pub fn AccountPanel(ctx: Ctx) -> impl IntoView {
                         .into_any()
                 }
             }}
+            <StatusLine status=status />
+        </Card>
+    }
+}
+
+/// A key pasted in, kept as the burner.
+#[component]
+pub fn ImportPanel(ctx: Ctx) -> impl IntoView {
+    let secret = RwSignal::new(String::new());
+    let status = RwSignal::new(Status::Idle);
+    let import = move |_| match keys::import(&secret.get_untracked()) {
+        Ok(burner) => {
+            secret.set(String::new());
+            ctx.account.set(Some(Account::Burner(burner)));
+            status.set(Status::Idle);
+            go(Route::Home);
+        }
+        Err(error) => status.set(Status::Failed(error.to_string())),
+    };
+
+    view! {
+        <Panel title="Import a key">
+            <p class="note">"Kept in this browser's local storage, as the burner key is: testnet keys only."</p>
+            <Field label="Private key" value=secret placeholder="0x..." secret=true />
+            <Actions>
+                <button class="button primary" on:click=import>"Import"</button>
+            </Actions>
             <StatusLine status=status />
         </Panel>
     }

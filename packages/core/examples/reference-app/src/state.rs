@@ -1,17 +1,20 @@
-//! What the page shares and how it acts: the account, the head, a tick that keeps reads fresh,
-//! every transaction it sent, each action's status, and the one way an action sends.
+//! What the page shares and how it acts: the account, the screen shown, Elysium's head, a tick that
+//! keeps reads fresh, every transaction it sent, each action's status, and the one way an action
+//! sends.
 
 use std::cell::Cell;
 use std::error::Error;
 use std::future::Future;
 use std::rc::Rc;
 
-use df_elysium_core::client::{Call, Receipt};
-use df_elysium_core::{Address, B256};
+use df_elysium_core::client::{BlockTag, Call, Receipt};
+use df_elysium_core::nitro::gas_info;
+use df_elysium_core::{Address, B256, U256};
 use leptos::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::net::{self, Account, Chain, short};
+use crate::route::Route;
 
 /// What an action ends with, or why it stopped.
 pub type Out<T> = Result<T, Box<dyn Error>>;
@@ -30,12 +33,39 @@ pub struct Activity {
     pub succeeded: Option<bool>,
 }
 
-/// What every panel shares.
+/// Elysium's latest block, as every screen shows it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Head {
+    pub number: u64,
+    /// The HyperEVM block it was sequenced at.
+    pub parent: u64,
+    pub arbos: u64,
+    pub sends: u64,
+    pub base_fee: U256,
+    /// HyperEVM's base fee as ArbOS estimates it, what posting data costs.
+    pub data_price: U256,
+}
+
+pub async fn head() -> Out<Head> {
+    let client = Chain::Elysium.reader();
+    let block = client.block(BlockTag::Latest, false).await?.ok_or("no latest block")?;
+    Ok(Head {
+        number: block.number,
+        parent: block.l1_block_number,
+        arbos: block.arbos_version(),
+        sends: block.send_count,
+        base_fee: block.base_fee_per_gas.unwrap_or(U256::ZERO),
+        data_price: client.read(&gas_info::l1_base_fee_estimate()).await?,
+    })
+}
+
+/// What every screen shares.
 #[derive(Clone, Copy)]
 pub struct Ctx {
     pub account: RwSignal<Option<Account>>,
-    /// Elysium's latest block, as the chain panel last read it.
-    pub head: RwSignal<Option<u64>>,
+    pub route: RwSignal<Route>,
+    /// Elysium's head, polled whatever the screen.
+    pub head: Loaded<Head>,
     /// Counts up every few seconds and after each transaction: polled reads run again on it.
     pub tick: RwSignal<u64>,
     pub activity: RwSignal<Vec<Activity>>,
@@ -43,12 +73,20 @@ pub struct Ctx {
 
 impl Ctx {
     pub fn new(account: Option<Account>) -> Ctx {
-        Ctx {
+        let mut ctx = Ctx {
             account: RwSignal::new(account),
+            route: RwSignal::new(Route::current()),
             head: RwSignal::new(None),
             tick: RwSignal::new(0),
             activity: RwSignal::new(Vec::new()),
-        }
+        };
+        ctx.head = poll(ctx, None, || Some(head()));
+        ctx
+    }
+
+    /// Whether `route` is the screen shown, tracked.
+    pub fn showing(&self, route: Route) -> bool {
+        self.route.get() == route
     }
 
     /// The account's address, tracked: a read that names it runs again when it changes.
@@ -137,26 +175,27 @@ pub async fn transact(ctx: Ctx, status: RwSignal<Status>, chain: Chain, what: &s
 /// now and then lag a block. Reads are safe to repeat; sends never are, and are never repeated.
 const RETRY_AFTER_MS: [i32; 2] = [1_000, 3_000];
 
-/// Runs `read` now, again on every tick, and again when a signal it reads changes. `read` answers
-/// `None` when there is nothing to read yet (no account).
-pub fn poll<T, F>(ctx: Ctx, read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
+/// Runs `read` on every tick, and again when a signal it reads changes, while `on` is the screen
+/// shown (`None`: whatever the screen); showing it again reads at once. `read` answers `None` when
+/// there is nothing to read yet (no account).
+pub fn poll<T, F>(ctx: Ctx, on: Option<Route>, read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
 where
     T: Send + Sync + 'static,
     F: Future<Output = Out<T>> + 'static,
 {
-    reread(Some(ctx), read)
+    reread(ctx, true, on, read)
 }
 
-/// Runs `read` now, and again only when a signal it reads changes.
-pub fn follow<T, F>(read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
+/// Runs `read` when `on` is shown, and again when a signal it reads changes.
+pub fn follow<T, F>(ctx: Ctx, on: Option<Route>, read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
 where
     T: Send + Sync + 'static,
     F: Future<Output = Out<T>> + 'static,
 {
-    reread(None, read)
+    reread(ctx, false, on, read)
 }
 
-fn reread<T, F>(ticks: Option<Ctx>, read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
+fn reread<T, F>(ctx: Ctx, ticks: bool, on: Option<Route>, read: impl Fn() -> Option<F> + 'static) -> Loaded<T>
 where
     T: Send + Sync + 'static,
     F: Future<Output = Out<T>> + 'static,
@@ -166,17 +205,18 @@ where
     let latest = Rc::new(Cell::new(0u64));
     let running = Rc::new(Cell::new(false));
     Effect::new(move |_| {
-        if let Some(ctx) = ticks {
+        if ticks {
             ctx.tick.track();
         }
+        let shown = on.is_none_or(|route| ctx.showing(route));
         // Called every time, so the effect keeps tracking what it reads.
         let Some(answer) = (*read)() else {
             latest.set(latest.get().wrapping_add(1));
             loaded.set(Some(Err(String::new())));
             return;
         };
-        // A poll still running when the tick comes is left to finish.
-        if ticks.is_some() && running.get() {
+        // Hidden, nothing is read; a poll still running when the tick comes is left to finish.
+        if !shown || (ticks && running.get()) {
             return;
         }
         let id = latest.get().wrapping_add(1);

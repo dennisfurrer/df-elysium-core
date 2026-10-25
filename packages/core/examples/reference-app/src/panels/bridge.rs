@@ -15,8 +15,9 @@ use df_elysium_core::{Address, B256};
 use leptos::prelude::*;
 
 use crate::net::{Chain, HYPE_SYSTEM, NETWORK, short, sleep};
+use crate::route::Route;
 use crate::state::{Ctx, Out, Status, follow, problem, run, transact};
-use crate::ui::{Actions, Field, Panel, Part, StatusLine, hype_text};
+use crate::ui::{Actions, Entry, Field, Panel, Part, StatusLine, hype_text};
 
 /// How many of the account's withdrawals are listed, newest first.
 const LISTED: usize = 6;
@@ -81,24 +82,18 @@ async fn withdrawals(me: Address) -> Out<Vec<(Withdrawal, Standing)>> {
     Ok(listed)
 }
 
+/// HYPE in from HyperEVM: simulated, deposited and followed until it lands; or any deposit followed
+/// from its HyperEVM transaction.
 #[component]
-pub fn BridgePanel(ctx: Ctx) -> impl IntoView {
-    let deposit_amount = RwSignal::new("0.001".to_owned());
+pub fn DepositPanel(ctx: Ctx) -> impl IntoView {
+    let amount = RwSignal::new("0.001".to_owned());
     let track = RwSignal::new(String::new());
-    let status_in = RwSignal::new(Status::Idle);
-    let withdraw_to = RwSignal::new(String::new());
-    let withdraw_amount = RwSignal::new("0.0001".to_owned());
-    let status_out = RwSignal::new(Status::Idle);
-    let reload = RwSignal::new(0u32);
-    let listed = follow(move || {
-        reload.track();
-        ctx.me().map(withdrawals)
-    });
+    let status = RwSignal::new(Status::Idle);
 
     let simulate = move |_| {
-        run(status_in, "simulating on HyperEVM", async move {
+        run(status, "simulating on HyperEVM", async move {
             let me = ctx.sender()?.address();
-            let call = bridge::deposit(NETWORK, deposit_amount.get_untracked().trim().parse()?)?;
+            let call = bridge::deposit(NETWORK, amount.get_untracked().trim().parse()?)?;
             let parent = Chain::HyperEvm.reader();
             let funded = parent.balance(me).await? > call.value;
             let sender = if funded { me } else { HYPE_SYSTEM };
@@ -117,12 +112,12 @@ pub fn BridgePanel(ctx: Ctx) -> impl IntoView {
         })
     };
     let deposit = move |_| {
-        run(status_in, "depositing", async move {
-            let call = bridge::deposit(NETWORK, deposit_amount.get_untracked().trim().parse()?)?;
-            let receipt = transact(ctx, status_in, Chain::HyperEvm, "deposit", call).await?;
+        run(status, "depositing", async move {
+            let call = bridge::deposit(NETWORK, amount.get_untracked().trim().parse()?)?;
+            let receipt = transact(ctx, status, Chain::HyperEvm, "deposit", call).await?;
             let mut last = None;
             for (deposit, hash) in landings(receipt.transaction_hash).await? {
-                status_in.set(Status::Busy(format!("message {}: waiting for Elysium", deposit.message_number)));
+                status.set(Status::Busy(format!("message {}: waiting for Elysium", deposit.message_number)));
                 landed(hash).await?;
                 last = Some(hash);
             }
@@ -131,11 +126,11 @@ pub fn BridgePanel(ctx: Ctx) -> impl IntoView {
         })
     };
     let follow_deposit = move |_| {
-        run(status_in, "following the deposit", async move {
+        run(status, "following the deposit", async move {
             let hash: B256 = track.get_untracked().trim().parse()?;
             let mut last = None;
             for (deposit, hash) in landings(hash).await? {
-                status_in.set(Status::Busy(format!("message {}: waiting for Elysium", deposit.message_number)));
+                status.set(Status::Busy(format!("message {}: waiting for Elysium", deposit.message_number)));
                 landed(hash).await?;
                 last = Some((deposit, hash));
             }
@@ -144,53 +139,83 @@ pub fn BridgePanel(ctx: Ctx) -> impl IntoView {
             Ok(Status::sent(note, Chain::Elysium, hash))
         })
     };
+
+    view! {
+        <Panel title="Deposit from HyperEVM">
+            <p class="note">"Inbox.depositEth() on HyperEVM; it lands on Elysium a block or two later. Gas is paid on HyperEVM."</p>
+            <Field label="Amount, HYPE" value=amount />
+            <Actions>
+                <button class="button" on:click=simulate>"Simulate"</button>
+                <button class="button primary" on:click=deposit>"Deposit"</button>
+            </Actions>
+            <Part title="Follow a deposit" />
+            <Field label="HyperEVM transaction" value=track placeholder="0x... its hash" />
+            <Actions>
+                <button class="button" on:click=follow_deposit>"Follow"</button>
+            </Actions>
+            <StatusLine status=status />
+        </Panel>
+    }
+}
+
+/// HYPE out to HyperEVM: burnt here at once, claimable there once the rollup confirms it.
+#[component]
+pub fn WithdrawPanel(ctx: Ctx) -> impl IntoView {
+    let to = RwSignal::new(String::new());
+    let amount = RwSignal::new("0.0001".to_owned());
+    let status = RwSignal::new(Status::Idle);
     let withdraw = move |_| {
-        run(status_out, "withdrawing", async move {
+        run(status, "withdrawing", async move {
             let me = ctx.sender()?.address();
-            let to = match withdraw_to.get_untracked().trim() {
+            let to = match to.get_untracked().trim() {
                 "" => me,
                 to => to.parse()?,
             };
-            let call = bridge::withdraw(to, withdraw_amount.get_untracked().trim().parse()?)?;
-            let receipt = transact(ctx, status_out, Chain::Elysium, "withdraw", call).await?;
+            let call = bridge::withdraw(to, amount.get_untracked().trim().parse()?)?;
+            let receipt = transact(ctx, status, Chain::Elysium, "withdraw", call).await?;
             let leaves: Vec<String> =
                 Withdrawal::in_logs(&receipt.logs)?.iter().map(|sent| sent.position.to_string()).collect();
-            reload.update(|count| *count = count.wrapping_add(1));
             let note = format!("leaf {}: claimable on HyperEVM once confirmed", leaves.join(", "));
             Ok(Status::sent(note, Chain::Elysium, receipt.transaction_hash))
         })
     };
+
+    view! {
+        <Panel title="Withdraw to HyperEVM">
+            <p class="note">"ArbSys.withdrawEth burns the HYPE here and makes a leaf of the outbox. It is claimable on HyperEVM once the rollup confirms it; Chain and gas shows how far behind that runs."</p>
+            <Field label="To on HyperEVM" value=to placeholder="this account" />
+            <Field label="Amount, HYPE" value=amount />
+            <Actions>
+                <button class="button primary" on:click=withdraw>"Withdraw"</button>
+                <Entry route=Route::Claims label="Claims" />
+            </Actions>
+            <StatusLine status=status />
+        </Panel>
+    }
+}
+
+/// The account's withdrawals, where each claim stands, and the claim once it can be made.
+#[component]
+pub fn ClaimsPanel(ctx: Ctx) -> impl IntoView {
+    let status = RwSignal::new(Status::Idle);
+    let reload = RwSignal::new(0u32);
+    let again = move || reload.update(|count| *count = count.wrapping_add(1));
+    let listed = follow(ctx, Some(Route::Claims), move || {
+        reload.track();
+        ctx.me().map(withdrawals)
+    });
     let claim = move |call: Call, position: u64| {
-        run(status_out, format!("claiming leaf {position}"), async move {
-            let receipt = transact(ctx, status_out, Chain::HyperEvm, "claim", call).await?;
-            reload.update(|count| *count = count.wrapping_add(1));
+        run(status, format!("claiming leaf {position}"), async move {
+            let receipt = transact(ctx, status, Chain::HyperEvm, "claim", call).await?;
+            again();
             Ok(Status::sent(format!("leaf {position} paid out"), Chain::HyperEvm, receipt.transaction_hash))
         })
     };
 
     view! {
-        <Panel title="Bridge">
-            <Part title="In, from HyperEVM" />
-            <Field label="Amount, HYPE" value=deposit_amount />
-            <Actions>
-                <button class="button" on:click=simulate>"Simulate"</button>
-                <button class="button primary" on:click=deposit>"Deposit"</button>
-            </Actions>
-            <Field label="Follow a HyperEVM transaction" value=track placeholder="0x... its hash" />
-            <Actions>
-                <button class="button" on:click=follow_deposit>"Follow"</button>
-            </Actions>
-            <StatusLine status=status_in />
-            <Part title="Out, to HyperEVM" />
-            <Field label="To on HyperEVM" value=withdraw_to placeholder="this account" />
-            <Field label="Amount, HYPE" value=withdraw_amount />
-            <Actions>
-                <button class="button primary" on:click=withdraw>"Withdraw"</button>
-                <button class="button" on:click=move |_| reload.update(|count| *count = count.wrapping_add(1))>
-                    "Refresh"
-                </button>
-            </Actions>
-            <StatusLine status=status_out />
+        <Panel title="Claim withdrawals">
+            <p class="note">"Withdrawals to this account, newest first. A claim runs Outbox.executeTransaction on HyperEVM and pays gas there."</p>
+            {move || listed.with(|listed| listed.is_none()).then(|| view! { <p class="status busy">"reading the outbox"</p> })}
             {problem(listed)}
             {move || {
                 listed
@@ -233,6 +258,10 @@ pub fn BridgePanel(ctx: Ctx) -> impl IntoView {
                             .into_any()
                     })
             }}
+            <Actions>
+                <button class="button" on:click=move |_| again()>"Refresh"</button>
+            </Actions>
+            <StatusLine status=status />
         </Panel>
     }
 }

@@ -7,6 +7,7 @@ use df_elysium_core::{Address, B256, U256};
 use leptos::prelude::*;
 
 use crate::net::{Chain, NETWORK, short};
+use crate::route::Route;
 use crate::state::Status;
 
 #[component]
@@ -16,6 +17,30 @@ pub fn Panel(title: &'static str, children: Children) -> impl IntoView {
             <h2 class="panel-title">{title}</h2>
             <div class="panel-body">{children()}</div>
         </section>
+    }
+}
+
+/// A card on the home screen: what a group of tools does, then its entry points.
+#[component]
+pub fn Card(title: &'static str, note: &'static str, children: Children) -> impl IntoView {
+    view! {
+        <section class="panel card">
+            <h2 class="panel-title">{title}</h2>
+            <div class="panel-body">
+                <p class="note">{note}</p>
+                {children()}
+            </div>
+        </section>
+    }
+}
+
+/// A button that opens a tool.
+#[component]
+pub fn Entry(route: Route, label: &'static str, #[prop(optional)] primary: bool) -> impl IntoView {
+    view! {
+        <a class="button" class:primary=primary href=route.href()>
+            {label}
+        </a>
     }
 }
 

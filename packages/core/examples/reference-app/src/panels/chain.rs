@@ -3,37 +3,14 @@
 //! with the HYPE the bridge holds there.
 
 use df_elysium_core::bridge::claim;
-use df_elysium_core::client::BlockTag;
 use df_elysium_core::nitro::{gas_info, retryable};
 use df_elysium_core::{Dec, U256};
 use leptos::prelude::*;
 
 use crate::net::{Chain, NETWORK};
-use crate::state::{Ctx, Out, follow, poll, problem, text};
-use crate::ui::{Panel, Part, Row, gwei};
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct Head {
-    number: u64,
-    parent: u64,
-    arbos: u64,
-    sends: u64,
-    base_fee: U256,
-    data_price: U256,
-}
-
-async fn head() -> Out<Head> {
-    let client = Chain::Elysium.reader();
-    let block = client.block(BlockTag::Latest, false).await?.ok_or("no latest block")?;
-    Ok(Head {
-        number: block.number,
-        parent: block.l1_block_number,
-        arbos: block.arbos_version(),
-        sends: block.send_count,
-        base_fee: block.base_fee_per_gas.unwrap_or(U256::ZERO),
-        data_price: client.read(&gas_info::l1_base_fee_estimate()).await?,
-    })
-}
+use crate::route::Route;
+use crate::state::{Ctx, Head, Out, follow, problem, text};
+use crate::ui::{Actions, Card, Entry, Panel, Part, Row, gwei};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Limits {
@@ -70,24 +47,37 @@ async fn outbox() -> Out<Outbox> {
     Ok(Outbox { block: block.number, sends: block.send_count, locked: parent.hype(contracts.bridge).await? })
 }
 
+/// The chain on the home screen: its head and fees, and the tools that look at it.
+#[component]
+pub fn ChainCard(ctx: Ctx) -> impl IntoView {
+    let latest = ctx.head;
+    view! {
+        <Card title="Chain" note="Elysium testnet as it says of itself, any transaction on either chain, and blocks as they come.">
+            <Row label="head">{text(latest, |head: &Head| head.number.to_string())}</Row>
+            <Row label="base fee">{text(latest, |head: &Head| gwei(head.base_fee))}</Row>
+            <Row label="ArbOS">{text(latest, |head: &Head| head.arbos.to_string())}</Row>
+            <Actions>
+                <Entry route=Route::Chain label="Chain and gas" />
+                <Entry route=Route::Inspect label="Inspect a transaction" />
+                <Entry route=Route::Live label="Live blocks" />
+            </Actions>
+        </Card>
+    }
+}
+
 #[component]
 pub fn ChainPanel(ctx: Ctx) -> impl IntoView {
-    let latest = poll(ctx, || Some(head()));
-    let limits = follow(|| Some(limits()));
+    let latest = ctx.head;
+    let limits = follow(ctx, Some(Route::Chain), || Some(limits()));
     // Once a minute is plenty: the rollup confirms an assertion every few minutes.
     let minute = Memo::new(move |_| ctx.tick.get() / 15);
-    let confirmed = follow(move || {
+    let confirmed = follow(ctx, Some(Route::Chain), move || {
         minute.track();
         Some(outbox())
     });
-    Effect::new(move |_| {
-        if let Some(Ok(head)) = latest.get() {
-            ctx.head.set(Some(head.number));
-        }
-    });
 
     view! {
-        <Panel title="Chain">
+        <Panel title="Chain and gas">
             <Row label="chain">{format!("{} ({})", NETWORK.chain_id(), NETWORK.name())}</Row>
             <Row label="head">{text(latest, |head: &Head| head.number.to_string())}</Row>
             <Row label="at HyperEVM block">{text(latest, |head: &Head| head.parent.to_string())}</Row>

@@ -98,13 +98,89 @@ async fn tickets(hash: B256) -> Out<Vec<Followed>> {
     }
 }
 
+/// The tickets `followed`, each with its redeems and a Redeem button while it is live; a redeem
+/// reads them again from `source`, the HyperEVM transaction that submitted them.
+fn listing(
+    ctx: Ctx,
+    status: RwSignal<Status>,
+    followed: RwSignal<Vec<Followed>>,
+    source: RwSignal<Option<B256>>,
+) -> impl IntoView {
+    let redeem = move |id: B256| {
+        run(status, "redeeming", async move {
+            let receipt = transact(ctx, status, Chain::Elysium, "redeem", retryable::redeem(id)).await?;
+            if let Some(hash) = source.get_untracked() {
+                followed.set(tickets(hash).await?);
+            }
+            Ok(Status::sent("redeemed", Chain::Elysium, receipt.transaction_hash))
+        })
+    };
+    move || {
+        followed
+            .get()
+            .into_iter()
+            .map(|ticket| {
+                let id = ticket.id;
+                let redeemed = ticket.redeems.iter().any(|(_, ran)| *ran == Some(true));
+                let state = match (ticket.submitted, redeemed, ticket.live_until) {
+                    (None, _, _) => "not on Elysium yet".to_owned(),
+                    (Some(false), _, _) => "submission failed".to_owned(),
+                    (Some(true), true, _) => "redeemed".to_owned(),
+                    (Some(true), false, Some(until)) => format!("live until {}", when(until)),
+                    (Some(true), false, None) => "gone: cancelled or expired".to_owned(),
+                };
+                let can_redeem = ticket.submitted == Some(true) && !redeemed && ticket.live_until.is_some();
+                view! {
+                    <Part title="Ticket" />
+                    <div class="entry">
+                        <span>{format!("message {}", ticket.number)}</span>
+                        <TxLink chain=Chain::Elysium hash=id />
+                    </div>
+                    <div class="entry">
+                        <span class="dim">{format!("to {}", short(&ticket.to.to_string()))}</span>
+                        <span>{hype_text(ticket.value)}</span>
+                        <span>{state}</span>
+                    </div>
+                    {ticket
+                        .redeems
+                        .into_iter()
+                        .map(|(hash, ran)| {
+                            let (class, text) = match ran {
+                                None => ("busy", "scheduled"),
+                                Some(true) => ("ok", "ran"),
+                                Some(false) => ("crit", "failed"),
+                            };
+                            view! {
+                                <div class="entry">
+                                    <span class="dim">"redeem"</span>
+                                    <TxLink chain=Chain::Elysium hash=hash />
+                                    <span class=class>{text}</span>
+                                </div>
+                            }
+                        })
+                        .collect_view()}
+                    {can_redeem
+                        .then(|| {
+                            view! {
+                                <Actions>
+                                    <button class="button small" on:click=move |_| redeem(id)>"Redeem"</button>
+                                </Actions>
+                            }
+                        })}
+                }
+            })
+            .collect_view()
+    }
+}
+
+/// A ticket built, simulated and submitted from HyperEVM, then followed until Elysium takes it.
 #[component]
-pub fn RetryablePanel(ctx: Ctx) -> impl IntoView {
+pub fn TicketPanel(ctx: Ctx) -> impl IntoView {
     let to = RwSignal::new(String::new());
     let value = RwSignal::new("0".to_owned());
     let data = RwSignal::new(String::new());
-    let track = RwSignal::new(String::new());
     let followed = RwSignal::new(Vec::<Followed>::new());
+    let source = RwSignal::new(None::<B256>);
     let status = RwSignal::new(Status::Idle);
 
     let inputs = move || -> Out<(Address, Address, Dec, Vec<u8>)> {
@@ -150,7 +226,7 @@ pub fn RetryablePanel(ctx: Ctx) -> impl IntoView {
             let (_, call) = build(me, to, value, data).await?;
             let receipt = transact(ctx, status, Chain::HyperEvm, "retryable ticket", call).await?;
             let hash = receipt.transaction_hash;
-            track.set(hash.to_string());
+            source.set(Some(hash));
             for _ in 0..120 {
                 let found = tickets(hash).await?;
                 let done = found.iter().all(|ticket| ticket.submitted.is_some());
@@ -164,24 +240,10 @@ pub fn RetryablePanel(ctx: Ctx) -> impl IntoView {
             Err("Elysium has not taken the ticket after two minutes".into())
         })
     };
-    let follow_ticket = move |_| {
-        run(status, "following", async move {
-            followed.set(tickets(track.get_untracked().trim().parse()?).await?);
-            Ok(Status::Idle)
-        })
-    };
-    let redeem = move |id: B256| {
-        run(status, "redeeming", async move {
-            let receipt = transact(ctx, status, Chain::Elysium, "redeem", retryable::redeem(id)).await?;
-            if let Ok(hash) = track.get_untracked().trim().parse() {
-                followed.set(tickets(hash).await?);
-            }
-            Ok(Status::sent("redeemed", Chain::Elysium, receipt.transaction_hash))
-        })
-    };
 
     view! {
-        <Panel title="Retryable ticket">
+        <Panel title="Submit a ticket">
+            <p class="note">"Inbox.createRetryableTicket on HyperEVM: a call on Elysium, its gas and submission paid from HyperEVM."</p>
             <Field label="To on Elysium" value=to placeholder="this account" />
             <Field label="Value, HYPE" value=value />
             <Field label="Calldata" value=data placeholder="0x... none for a plain transfer" />
@@ -189,67 +251,37 @@ pub fn RetryablePanel(ctx: Ctx) -> impl IntoView {
                 <button class="button" on:click=simulate>"Simulate"</button>
                 <button class="button primary" on:click=send>"Submit"</button>
             </Actions>
-            <Field label="Follow a HyperEVM transaction" value=track placeholder="0x... its hash" />
+            <StatusLine status=status />
+            {listing(ctx, status, followed, source)}
+        </Panel>
+    }
+}
+
+/// Any ticket followed from its HyperEVM transaction to its redeem; a live one redeemed.
+#[component]
+pub fn TicketsPanel(ctx: Ctx) -> impl IntoView {
+    let track = RwSignal::new(String::new());
+    let followed = RwSignal::new(Vec::<Followed>::new());
+    let source = RwSignal::new(None::<B256>);
+    let status = RwSignal::new(Status::Idle);
+    let follow_ticket = move |_| {
+        run(status, "following", async move {
+            let hash: B256 = track.get_untracked().trim().parse()?;
+            source.set(Some(hash));
+            followed.set(tickets(hash).await?);
+            Ok(Status::Idle)
+        })
+    };
+
+    view! {
+        <Panel title="Follow or redeem a ticket">
+            <p class="note">"A ticket whose redeem failed stays live for a week: anyone may redeem it."</p>
+            <Field label="HyperEVM transaction" value=track placeholder="0x... the one that submitted it" />
             <Actions>
-                <button class="button" on:click=follow_ticket>"Follow"</button>
+                <button class="button primary" on:click=follow_ticket>"Follow"</button>
             </Actions>
             <StatusLine status=status />
-            {move || {
-                followed
-                    .get()
-                    .into_iter()
-                    .map(|ticket| {
-                        let id = ticket.id;
-                        let redeemed = ticket.redeems.iter().any(|(_, ran)| *ran == Some(true));
-                        let state = match (ticket.submitted, redeemed, ticket.live_until) {
-                            (None, _, _) => "not on Elysium yet".to_owned(),
-                            (Some(false), _, _) => "submission failed".to_owned(),
-                            (Some(true), true, _) => "redeemed".to_owned(),
-                            (Some(true), false, Some(until)) => format!("live until {}", when(until)),
-                            (Some(true), false, None) => "gone: cancelled or expired".to_owned(),
-                        };
-                        let can_redeem = ticket.submitted == Some(true) && !redeemed && ticket.live_until.is_some();
-                        view! {
-                            <Part title="Ticket" />
-                            <div class="entry">
-                                <span>{format!("message {}", ticket.number)}</span>
-                                <TxLink chain=Chain::Elysium hash=id />
-                            </div>
-                            <div class="entry">
-                                <span class="dim">{format!("to {}", short(&ticket.to.to_string()))}</span>
-                                <span>{hype_text(ticket.value)}</span>
-                                <span>{state}</span>
-                            </div>
-                            {ticket
-                                .redeems
-                                .into_iter()
-                                .map(|(hash, ran)| {
-                                    let (class, text) = match ran {
-                                        None => ("busy", "scheduled"),
-                                        Some(true) => ("ok", "ran"),
-                                        Some(false) => ("crit", "failed"),
-                                    };
-                                    view! {
-                                        <div class="entry">
-                                            <span class="dim">"redeem"</span>
-                                            <TxLink chain=Chain::Elysium hash=hash />
-                                            <span class=class>{text}</span>
-                                        </div>
-                                    }
-                                })
-                                .collect_view()}
-                            {can_redeem
-                                .then(|| {
-                                    view! {
-                                        <Actions>
-                                            <button class="button small" on:click=move |_| redeem(id)>"Redeem"</button>
-                                        </Actions>
-                                    }
-                                })}
-                        }
-                    })
-                    .collect_view()
-            }}
+            {listing(ctx, status, followed, source)}
         </Panel>
     }
 }

@@ -11,8 +11,9 @@ use leptos::prelude::*;
 
 use crate::keys;
 use crate::net::{Chain, NETWORK};
+use crate::route::Route;
 use crate::state::{Ctx, Out, Status, poll, problem, run, text, transact};
-use crate::ui::{Actions, Field, Panel, Part, Row, StatusLine};
+use crate::ui::{Actions, Entry, Field, Panel, Part, Row, StatusLine};
 
 /// Copies the ten bytes after it into memory and returns them: a contract that answers 42 to
 /// anything (`PUSH1 42, PUSH1 0, MSTORE, PUSH1 32, PUSH1 0, RETURN`).
@@ -47,14 +48,12 @@ async fn deployed(ctx: Ctx, status: RwSignal<Status>, what: &str, creation: Call
 #[component]
 pub fn DeployPanel(ctx: Ctx) -> impl IntoView {
     let salt = RwSignal::new(new_salt());
-    let created = poll(ctx, move || ctx.me().map(next_create));
+    let created = poll(ctx, Some(Route::Deploy), move || ctx.me().map(next_create));
     let created2 = move || {
         let salt: B256 = salt.get().trim().parse().ok()?;
         Some(deploy::create2_address(CREATE2_DEPLOYER, salt, deploy::init_code_hash(&FORTY_TWO)))
     };
     let status = RwSignal::new(Status::Idle);
-    let checked = RwSignal::new(ESCROW.to_owned());
-    let verdict = RwSignal::new(Status::Idle);
 
     let create = move |_| {
         run(status, "deploying with CREATE", async move {
@@ -72,19 +71,8 @@ pub fn DeployPanel(ctx: Ctx) -> impl IntoView {
             deployed(ctx, status, "CREATE2", deploy::create2(salt, &FORTY_TWO), at).await
         })
     };
-    let check = move |_| {
-        run(verdict, "asking Sourcify", async move {
-            let at: Address = checked.get_untracked().trim().parse()?;
-            let found = verify::status(&Web, NETWORK, at).await?;
-            Ok(Status::Done(match found.matched {
-                Some(matched) => format!("{matched:?} match, verified {}", found.verified_at.unwrap_or_default()),
-                None => "not verified".to_owned(),
-            }))
-        })
-    };
-
     view! {
-        <Panel title="Deploy">
+        <Panel title="Deploy a contract">
             <p class="note">"A contract that answers 42 to any call, 10 bytes of runtime."</p>
             <Row label="CREATE lands at">{text(created, |at: &Address| at.to_string())}</Row>
             {problem(created)}
@@ -98,13 +86,39 @@ pub fn DeployPanel(ctx: Ctx) -> impl IntoView {
                 <button class="button" on:click=move |_| salt.set(new_salt())>"New salt"</button>
             </Actions>
             <StatusLine status=status />
-            <Part title="Sourcify" />
+            <Actions>
+                <Entry route=Route::Verify label="Verify a contract" />
+            </Actions>
+        </Panel>
+    }
+}
+
+/// A contract's verification on Conduit's Sourcify.
+#[component]
+pub fn VerifyPanel() -> impl IntoView {
+    let checked = RwSignal::new(ESCROW.to_owned());
+    let verdict = RwSignal::new(Status::Idle);
+    let check = move |_| {
+        run(verdict, "asking Sourcify", async move {
+            let at: Address = checked.get_untracked().trim().parse()?;
+            let found = verify::status(&Web, NETWORK, at).await?;
+            Ok(Status::Done(match found.matched {
+                Some(matched) => format!("{matched:?} match, verified {}", found.verified_at.unwrap_or_default()),
+                None => "not verified".to_owned(),
+            }))
+        })
+    };
+
+    view! {
+        <Panel title="Verify on Sourcify">
+            <p class="note">"Elysium's contracts are verified on Conduit's Sourcify. The default is the reactor's escrow, verified."</p>
             <Field label="Contract" value=checked />
             <Actions>
-                <button class="button" on:click=check>"Check"</button>
+                <button class="button primary" on:click=check>"Check"</button>
             </Actions>
             <StatusLine status=verdict />
-            <p class="note mono">{format!("forge verify-contract --verifier sourcify --verifier-url {}", NETWORK.verifier_url())}</p>
+            <Part title="Verify one" />
+            <p class="note mono">{format!("forge verify-contract --verifier sourcify --verifier-url {} <address> <src:Contract>", NETWORK.verifier_url())}</p>
         </Panel>
     }
 }

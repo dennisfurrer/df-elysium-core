@@ -11,6 +11,7 @@ use df_elysium_core::{Address, U256, deploy};
 use leptos::prelude::*;
 
 use crate::net::Chain;
+use crate::route::Route;
 use crate::state::{Ctx, Out, Status, poll, problem, run, text, transact};
 use crate::ui::{Actions, AddressLink, Field, Panel, Part, Row, StatusLine};
 
@@ -64,7 +65,7 @@ async fn token(at: Address, me: Option<Address>) -> Out<Token> {
 #[component]
 pub fn TokenPanel(ctx: Ctx) -> impl IntoView {
     let address = RwSignal::new(USDC.to_owned());
-    let loaded = poll(ctx, move || {
+    let loaded = poll(ctx, Some(Route::Token), move || {
         let at = address.get().trim().parse().ok()?;
         Some(token(at, ctx.me()))
     });
@@ -112,7 +113,7 @@ pub fn TokenPanel(ctx: Ctx) -> impl IntoView {
     };
 
     view! {
-        <Panel title="ERC-20">
+        <Panel title="ERC-20 tokens">
             <Field label="Token" value=address placeholder="0x..." />
             {move || {
                 loaded
