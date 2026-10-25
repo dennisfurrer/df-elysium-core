@@ -11,7 +11,7 @@ build:
 serve: build
     python3 -m http.server 8080 --directory dist
 
-# A clean build, deployed to Cloudflare Pages: https://elysium-sdkrefapp-testnet.hype.st
+# A clean build, deployed to Cloudflare Pages: https://elysium-sdk-app.builder.markets
 deploy:
     rm -rf dist
     just build

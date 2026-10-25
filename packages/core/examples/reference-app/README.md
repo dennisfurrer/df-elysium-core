@@ -2,7 +2,7 @@
 
 Every part of df-elysium-core in one page, in the browser, on Elysium testnet. Leptos renders it client side; the SDK reads and sends through `fetch` (the `web` feature), straight to Kinetiq's node, HyperEVM's node and Conduit's Sourcify. No server, no bundler, no JavaScript dependencies.
 
-Live at **https://elysium-sdkrefapp-testnet.hype.st**.
+Live at **https://elysium-sdk-app.builder.markets**.
 
 ## Run it
 
