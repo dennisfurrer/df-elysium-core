@@ -1,0 +1,1439 @@
+{
+ "source": "@arbitrum/sdk 4.1.0 (ethers 5.8.0), viem 2.57.4 (abitype 1.2.3 for signatures), ABIs from @arbitrum/nitro-contracts 3.2.0 (BoLD-era: build/contracts/src/rollup/IRollupCore.sol for the rollup), Multicall3 and ERC-20 from their canonical signatures (viem erc20Abi). aliases: sdk Address.applyAlias, each checked to undo. deposits: EthDepositMessage.calculateDepositTxId, keccak256(0x64 || rlp([chainId, messageNumber as 32 bytes, from, to, value])), from being the aliased depositor as Bridge.MessageDelivered names it (Inbox._deliverToBridge aliases every sender) and to the depositor itself when it is an EOA. retryables: ParentToChildMessage.calculateSubmitRetryableId, keccak256(0x69 || rlp([chainId, messageNumber as 32 bytes, from, l1BaseFee, l1Value, maxFeePerGas, gasLimit, dest or empty for zero, l2CallValue, callValueRefundAddress, maxSubmissionFee, excessFeeRefundAddress, data])). No redeem list: the sdk reads the retry tx hash from RedeemScheduled rather than computing it. submissionFees: Inbox.sol calculateRetryableSubmissionFee, (1400 + 6 * dataLength) * (baseFee == 0 ? block.basefee : baseFee); a zero baseFee row is what the formula gives before the contract substitutes block.basefee. calldata: viem encodeFunctionData, each decoded back; signature is abitype formatAbiItem of the ABI item, args as decimal strings, lowercase hex, \"true\"/\"false\", arrays and tuples as JSON arrays in component order. events and answers: viem decodeEventLog (strict) and decodeFunctionResult; named tuples decode to objects, values as strings. Entries marked live are real logs and eth_call answers from Elysium testnet (99801) and HyperEVM testnet (998) on 2026-10-25; the rest are synthetic, built with encodeEventTopics and encodeAbiParameters. transactions: viem serializeTransaction and signTransaction with Hardhat account #0 on chain 99801; signingHash is keccak256 of the unsigned serialization (EIP-155 for legacy). create2: viem getContractAddress, opcode CREATE2.",
+ "aliases": [
+  {
+   "l1": "0x0000000000000000000000000000000000000000",
+   "l2": "0x1111000000000000000000000000000000001111"
+  },
+  {
+   "l1": "0xffffffffffffffffffffffffffffffffffffffff",
+   "l2": "0x1111000000000000000000000000000000001110"
+  },
+  {
+   "l1": "0xeeeeffffffffffffffffffffffffffffffffeeee",
+   "l2": "0xffffffffffffffffffffffffffffffffffffffff"
+  },
+  {
+   "l1": "0xeeef000000000000000000000000000000000000",
+   "l2": "0x0000000000000000000000000000000000001111"
+  },
+  {
+   "l1": "0x1111000000000000000000000000000000001111",
+   "l2": "0x2222000000000000000000000000000000002222"
+  },
+  {
+   "l1": "0x0000000000000000000000000000000000000001",
+   "l2": "0x1111000000000000000000000000000000001112"
+  },
+  {
+   "l1": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+   "l2": "0xb27b365ae8f34edadb8157849d4ace274bbaa275"
+  },
+  {
+   "l1": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+   "l2": "0x95aae50474b6e8c988b232f52583439abf37b9b2"
+  },
+  {
+   "l1": "0xb42125c7d54e666f4e76aabbec8fe5fdd7281028",
+   "l2": "0xc53225c7d54e666f4e76aabbec8fe5fdd7282139"
+  },
+  {
+   "l1": "0x3370d204eec8e1c308787fb0328e5675f939aae0",
+   "l2": "0x4481d204eec8e1c308787fb0328e5675f939bbf1"
+  }
+ ],
+ "deposits": [
+  {
+   "chainId": "99801",
+   "messageNumber": "1493460",
+   "from": "0x1abf96a8dbf6aa8b7bef332fa7b1cb0b0e36c77e",
+   "to": "0x09ae96a8dbf6aa8b7bef332fa7b1cb0b0e36b66d",
+   "value": "2000000000000000",
+   "txHash": "0xed0ccceaecb17a67809d55e584544ba75db725b2039dbca1571448271229411e",
+   "live": "Elysium testnet deposit 0xed0ccceaecb17a67809d55e584544ba75db725b2039dbca1571448271229411e (type 0x64), from HyperEVM testnet transaction 0xa26c60f216c8e641b8a1b72b4a1381cbc8805a87cd492754ec467ed0b2d55446 (Inbox.depositEth)"
+  },
+  {
+   "chainId": "99801",
+   "messageNumber": "0",
+   "from": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+   "to": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+   "value": "0",
+   "txHash": "0x9d1990b769773297299268a5297a21d6d446fd3a454698b2519fe8e2f80f9219"
+  },
+  {
+   "chainId": "99801",
+   "messageNumber": "1",
+   "from": "0xb27b365ae8f34edadb8157849d4ace274bbaa275",
+   "to": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+   "value": "1",
+   "txHash": "0x024560ccb8f4d7033c3fff4a67f157e3315e3e99fc002607795719c6bb7675f5"
+  },
+  {
+   "chainId": "99801",
+   "messageNumber": "1493385",
+   "from": "0x95aae50474b6e8c988b232f52583439abf37b9b2",
+   "to": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+   "value": "1000000000000000000",
+   "txHash": "0xcf484a57e01609b5bab5cd074d1e2c224e0ba8376c34dc5be2d233e071f0b61d"
+  },
+  {
+   "chainId": "99801",
+   "messageNumber": "18446744073709551615",
+   "from": "0xffffffffffffffffffffffffffffffffffffffff",
+   "to": "0x0000000000000000000000000000000000000001",
+   "value": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+   "txHash": "0xf19aac87990edfb5e36c2d2a6defe2c81218ff02fbcbe7720ce1a5a823729295"
+  }
+ ],
+ "retryables": [
+  {
+   "inputs": {
+    "chainId": "99801",
+    "messageNumber": "1493450",
+    "fromAddress": "0x19a32faa84ac2a54aa3cfd3725b03ca256f53eb3",
+    "l1BaseFee": "100000000",
+    "destAddress": "0x7255150a0340852fe4b4b5657c5ace6c09a4f959",
+    "l2CallValue": "0",
+    "l1Value": "430000000000000",
+    "maxSubmissionFee": "400000000000000",
+    "excessFeeRefundAddress": "0x53e21cfddd1af38dc8609a80c4da0cea8753d5fe",
+    "callValueRefundAddress": "0x53e21cfddd1af38dc8609a80c4da0cea8753d5fe",
+    "gasLimit": "300000",
+    "maxFeePerGas": "100000000",
+    "data": "0xd4f5532f00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000000000000049e40a7ff6f51359274bea8aa0db295e5e8cf3f30000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a97c6f97f71c0998ab0411f6fb925b53d7bca93b"
+   },
+   "ticketId": "0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13",
+   "live": "Elysium testnet submission 0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13 (type 0x69); its redeem is 0xba248fc3d08d0de9db84a40b1615fa9553c694acc453bd52a947d50104bc4d9b (type 0x68)"
+  },
+  {
+   "inputs": {
+    "chainId": "99801",
+    "messageNumber": "7",
+    "fromAddress": "0xb27b365ae8f34edadb8157849d4ace274bbaa275",
+    "l1BaseFee": "100000000",
+    "destAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "l2CallValue": "5",
+    "l1Value": "30002001000000005",
+    "maxSubmissionFee": "2001000000000",
+    "excessFeeRefundAddress": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "callValueRefundAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gasLimit": "300000",
+    "maxFeePerGas": "100000000",
+    "data": "0x"
+   },
+   "ticketId": "0xd4ec24a1ab90eec8a41c15323c4b1974d6fe2ab35335aa901a0f44b019317d08"
+  },
+  {
+   "inputs": {
+    "chainId": "99801",
+    "messageNumber": "1493386",
+    "fromAddress": "0xb27b365ae8f34edadb8157849d4ace274bbaa275",
+    "l1BaseFee": "100000000",
+    "destAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "l2CallValue": "5",
+    "l1Value": "30002001000000005",
+    "maxSubmissionFee": "182000000000",
+    "excessFeeRefundAddress": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "callValueRefundAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gasLimit": "300000",
+    "maxFeePerGas": "100000000",
+    "data": "0x00070e151c232a31383f464d545b626970777e858c939aa1a8afb6bdc4cbd2d9e0e7eef5fc030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dce3"
+   },
+   "ticketId": "0x20967e3a4a8b3c81b567c6225a33694c6449a2c7d547cda7b0f414566efe3b39"
+  },
+  {
+   "inputs": {
+    "chainId": "99801",
+    "messageNumber": "7",
+    "fromAddress": "0xb27b365ae8f34edadb8157849d4ace274bbaa275",
+    "l1BaseFee": "100000000",
+    "destAddress": "0x0000000000000000000000000000000000000000",
+    "l2CallValue": "5",
+    "l1Value": "30002001000000005",
+    "maxSubmissionFee": "2001000000000",
+    "excessFeeRefundAddress": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "callValueRefundAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gasLimit": "300000",
+    "maxFeePerGas": "100000000",
+    "data": "0x6080"
+   },
+   "ticketId": "0xa037551c67e4ad5fd63aa170cad0f88dc09da719953d93c6b3bcde6fee6d6080"
+  },
+  {
+   "inputs": {
+    "chainId": "42161",
+    "messageNumber": "7",
+    "fromAddress": "0xb27b365ae8f34edadb8157849d4ace274bbaa275",
+    "l1BaseFee": "100000000",
+    "destAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "l2CallValue": "0",
+    "l1Value": "0",
+    "maxSubmissionFee": "0",
+    "excessFeeRefundAddress": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "callValueRefundAddress": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gasLimit": "0",
+    "maxFeePerGas": "0",
+    "data": "0x"
+   },
+   "ticketId": "0x7a30baee0fd90f6ed59abac33f3b65e9665ce23afdae7dd62acd6a07e76df64a"
+  }
+ ],
+ "submissionFees": [
+  {
+   "dataLength": "0",
+   "baseFee": "100000000",
+   "fee": "140000000000"
+  },
+  {
+   "dataLength": "4",
+   "baseFee": "100000000",
+   "fee": "142400000000"
+  },
+  {
+   "dataLength": "100",
+   "baseFee": "336886",
+   "fee": "673772000"
+  },
+  {
+   "dataLength": "1000",
+   "baseFee": "1",
+   "fee": "7400"
+  },
+  {
+   "dataLength": "0",
+   "baseFee": "0",
+   "fee": "0"
+  }
+ ],
+ "calldata": [
+  {
+   "contract": "ArbSys",
+   "signature": "function withdrawEth(address destination) payable returns (uint256)",
+   "selector": "0x25e16063",
+   "args": [
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164"
+   ],
+   "calldata": "0x25e16063000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba9164"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function sendTxToL1(address destination, bytes data) payable returns (uint256)",
+   "selector": "0x928c169a",
+   "args": [
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x"
+   ],
+   "calldata": "0x928c169a000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba916400000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function sendTxToL1(address destination, bytes data) payable returns (uint256)",
+   "selector": "0x928c169a",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "0x00070e151c232a31383f464d545b626970777e858c939aa1a8afb6bdc4cbd2d9e0e7eef5fc030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dce3"
+   ],
+   "calldata": "0x928c169a0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a10000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004600070e151c232a31383f464d545b626970777e858c939aa1a8afb6bdc4cbd2d9e0e7eef5fc030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dce30000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function arbBlockHash(uint256 arbBlockNum) view returns (bytes32)",
+   "selector": "0x2b407a82",
+   "args": [
+    "15620000"
+   ],
+   "calldata": "0x2b407a820000000000000000000000000000000000000000000000000000000000ee57a0"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function arbBlockNumber() view returns (uint256)",
+   "selector": "0xa3b1b31d",
+   "args": [],
+   "calldata": "0xa3b1b31d"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function arbChainID() view returns (uint256)",
+   "selector": "0xd127f54a",
+   "args": [],
+   "calldata": "0xd127f54a"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function arbOSVersion() view returns (uint256)",
+   "selector": "0x051038f2",
+   "args": [],
+   "calldata": "0x051038f2"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function isTopLevelCall() view returns (bool)",
+   "selector": "0x08bd624c",
+   "args": [],
+   "calldata": "0x08bd624c"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function wasMyCallersAddressAliased() view returns (bool)",
+   "selector": "0x175a260b",
+   "args": [],
+   "calldata": "0x175a260b"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function myCallersAddressWithoutAliasing() view returns (address)",
+   "selector": "0xd74523b3",
+   "args": [],
+   "calldata": "0xd74523b3"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "function sendMerkleTreeState() view returns (uint256 size, bytes32 root, bytes32[] partials)",
+   "selector": "0x7aeecd2a",
+   "args": [],
+   "calldata": "0x7aeecd2a"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function gasEstimateComponents(address to, bool contractCreation, bytes data) payable returns (uint64 gasEstimate, uint64 gasEstimateForL1, uint256 baseFee, uint256 l1BaseFeeEstimate)",
+   "selector": "0xc94e6eeb",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "false",
+    "0x"
+   ],
+   "calldata": "0xc94e6eeb0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function gasEstimateComponents(address to, bool contractCreation, bytes data) payable returns (uint64 gasEstimate, uint64 gasEstimateForL1, uint256 baseFee, uint256 l1BaseFeeEstimate)",
+   "selector": "0xc94e6eeb",
+   "args": [
+    "0x0000000000000000000000000000000000000000",
+    "true",
+    "0x600180600b6000396000f300"
+   ],
+   "calldata": "0xc94e6eeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000c600180600b6000396000f3000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function gasEstimateL1Component(address to, bool contractCreation, bytes data) payable returns (uint64 gasEstimateForL1, uint256 baseFee, uint256 l1BaseFeeEstimate)",
+   "selector": "0x77d488a2",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "false",
+    "0xdeadbeef"
+   ],
+   "calldata": "0x77d488a20000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function constructOutboxProof(uint64 size, uint64 leaf) view returns (bytes32 send, bytes32 root, bytes32[] proof)",
+   "selector": "0x42696350",
+   "args": [
+    "747177",
+    "747176"
+   ],
+   "calldata": "0x4269635000000000000000000000000000000000000000000000000000000000000b66a900000000000000000000000000000000000000000000000000000000000b66a8"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function constructOutboxProof(uint64 size, uint64 leaf) view returns (bytes32 send, bytes32 root, bytes32[] proof)",
+   "selector": "0x42696350",
+   "args": [
+    "8",
+    "3"
+   ],
+   "calldata": "0x4269635000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function findBatchContainingBlock(uint64 blockNum) view returns (uint64 batch)",
+   "selector": "0x81f1adaf",
+   "args": [
+    "15620000"
+   ],
+   "calldata": "0x81f1adaf0000000000000000000000000000000000000000000000000000000000ee57a0"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function getL1Confirmations(bytes32 blockHash) view returns (uint64 confirmations)",
+   "selector": "0xe5ca238c",
+   "args": [
+    "0xabababababababababababababababababababababababababababababababab"
+   ],
+   "calldata": "0xe5ca238cabababababababababababababababababababababababababababababababab"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function estimateRetryableTicket(address sender, uint256 deposit, address to, uint256 l2CallValue, address excessFeeRefundAddress, address callValueRefundAddress, bytes data)",
+   "selector": "0xc3dc5879",
+   "args": [
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "1000000000000000000",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "5",
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "0x1234"
+   ],
+   "calldata": "0xc3dc5879000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a10000000000000000000000000000000000000000000000000000000000000005000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a100000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000021234000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function nitroGenesisBlock() pure returns (uint256 number)",
+   "selector": "0x93a2fe21",
+   "args": [],
+   "calldata": "0x93a2fe21"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function blockL1Num(uint64 l2BlockNum) view returns (uint64 l1BlockNum)",
+   "selector": "0x6f275ef2",
+   "args": [
+    "15620000"
+   ],
+   "calldata": "0x6f275ef20000000000000000000000000000000000000000000000000000000000ee57a0"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function l2BlockRangeForL1(uint64 blockNum) view returns (uint64 firstBlock, uint64 lastBlock)",
+   "selector": "0x48e7f811",
+   "args": [
+    "67847915"
+   ],
+   "calldata": "0x48e7f81100000000000000000000000000000000000000000000000000000000040b46eb"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function redeem(bytes32 ticketId) returns (bytes32)",
+   "selector": "0xeda1122c",
+   "args": [
+    "0x1212121212121212121212121212121212121212121212121212121212121212"
+   ],
+   "calldata": "0xeda1122c1212121212121212121212121212121212121212121212121212121212121212"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function keepalive(bytes32 ticketId) returns (uint256)",
+   "selector": "0xf0b21a41",
+   "args": [
+    "0x1212121212121212121212121212121212121212121212121212121212121212"
+   ],
+   "calldata": "0xf0b21a411212121212121212121212121212121212121212121212121212121212121212"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function cancel(bytes32 ticketId)",
+   "selector": "0xc4d252f5",
+   "args": [
+    "0x1212121212121212121212121212121212121212121212121212121212121212"
+   ],
+   "calldata": "0xc4d252f51212121212121212121212121212121212121212121212121212121212121212"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function getTimeout(bytes32 ticketId) view returns (uint256)",
+   "selector": "0x9f1025c6",
+   "args": [
+    "0x1212121212121212121212121212121212121212121212121212121212121212"
+   ],
+   "calldata": "0x9f1025c61212121212121212121212121212121212121212121212121212121212121212"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function getBeneficiary(bytes32 ticketId) view returns (address)",
+   "selector": "0xba20dda4",
+   "args": [
+    "0x1212121212121212121212121212121212121212121212121212121212121212"
+   ],
+   "calldata": "0xba20dda41212121212121212121212121212121212121212121212121212121212121212"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function getLifetime() view returns (uint256)",
+   "selector": "0x81e6e083",
+   "args": [],
+   "calldata": "0x81e6e083"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "function getCurrentRedeemer() view returns (address)",
+   "selector": "0xde4ba2b3",
+   "args": [],
+   "calldata": "0xde4ba2b3"
+  },
+  {
+   "contract": "ArbWasm",
+   "signature": "function activateProgram(address program) payable returns (uint16 version, uint256 dataFee)",
+   "selector": "0x58c780c2",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1"
+   ],
+   "calldata": "0x58c780c20000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1"
+  },
+  {
+   "contract": "ArbWasm",
+   "signature": "function programVersion(address program) view returns (uint16 version)",
+   "selector": "0xcc8f4e88",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1"
+   ],
+   "calldata": "0xcc8f4e880000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1"
+  },
+  {
+   "contract": "ArbWasm",
+   "signature": "function codehashVersion(bytes32 codehash) view returns (uint16 version)",
+   "selector": "0xd70c0ca7",
+   "args": [
+    "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+   ],
+   "calldata": "0xd70c0ca7cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+  },
+  {
+   "contract": "ArbWasm",
+   "signature": "function stylusVersion() view returns (uint16 version)",
+   "selector": "0xa996e0c2",
+   "args": [],
+   "calldata": "0xa996e0c2"
+  },
+  {
+   "contract": "ArbWasmCache",
+   "signature": "function cacheProgram(address addr)",
+   "selector": "0xe73ac9f2",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1"
+   ],
+   "calldata": "0xe73ac9f20000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1"
+  },
+  {
+   "contract": "ArbWasmCache",
+   "signature": "function evictCodehash(bytes32 codehash)",
+   "selector": "0xce972013",
+   "args": [
+    "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+   ],
+   "calldata": "0xce972013cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+  },
+  {
+   "contract": "ArbWasmCache",
+   "signature": "function codehashIsCached(bytes32 codehash) view returns (bool)",
+   "selector": "0xa72f179b",
+   "args": [
+    "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+   ],
+   "calldata": "0xa72f179bcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+  },
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getPricesInWei() view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
+   "selector": "0x41b247a8",
+   "args": [],
+   "calldata": "0x41b247a8"
+  },
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getL1BaseFeeEstimate() view returns (uint256)",
+   "selector": "0xf5d6ded7",
+   "args": [],
+   "calldata": "0xf5d6ded7"
+  },
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getPricesInArbGas() view returns (uint256, uint256, uint256)",
+   "selector": "0x02199f34",
+   "args": [],
+   "calldata": "0x02199f34"
+  },
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getGasBacklog() view returns (uint64)",
+   "selector": "0x1d5b5c20",
+   "args": [],
+   "calldata": "0x1d5b5c20"
+  },
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getMinimumGasPrice() view returns (uint256)",
+   "selector": "0xf918379a",
+   "args": [],
+   "calldata": "0xf918379a"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function depositEth() payable returns (uint256)",
+   "selector": "0x439370b1",
+   "args": [],
+   "calldata": "0x439370b1"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function createRetryableTicket(address to, uint256 l2CallValue, uint256 maxSubmissionCost, address excessFeeRefundAddress, address callValueRefundAddress, uint256 gasLimit, uint256 maxFeePerGas, bytes data) payable returns (uint256)",
+   "selector": "0x679b6ded",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "5",
+    "2001000000000",
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "300000",
+    "100000000",
+    "0x"
+   ],
+   "calldata": "0x679b6ded0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a10000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001d1e4e4ea00000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a100000000000000000000000000000000000000000000000000000000000493e00000000000000000000000000000000000000000000000000000000005f5e10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function createRetryableTicket(address to, uint256 l2CallValue, uint256 maxSubmissionCost, address excessFeeRefundAddress, address callValueRefundAddress, uint256 gasLimit, uint256 maxFeePerGas, bytes data) payable returns (uint256)",
+   "selector": "0x679b6ded",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "1000000000000000",
+    "3000000000000",
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "300000",
+    "200000000",
+    "0x00070e151c232a31383f464d545b626970777e858c939aa1a8afb6bdc4cbd2d9e0e7eef5fc030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dce3"
+   ],
+   "calldata": "0x679b6ded0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a100000000000000000000000000000000000000000000000000038d7ea4c68000000000000000000000000000000000000000000000000000000002ba7def3000000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a100000000000000000000000000000000000000000000000000000000000493e0000000000000000000000000000000000000000000000000000000000bebc2000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000004600070e151c232a31383f464d545b626970777e858c939aa1a8afb6bdc4cbd2d9e0e7eef5fc030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dce30000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function unsafeCreateRetryableTicket(address to, uint256 l2CallValue, uint256 maxSubmissionCost, address excessFeeRefundAddress, address callValueRefundAddress, uint256 gasLimit, uint256 maxFeePerGas, bytes data) payable returns (uint256)",
+   "selector": "0x6e6e8a6a",
+   "args": [
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "5",
+    "2001000000000",
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "300000",
+    "100000000",
+    "0xabcdef"
+   ],
+   "calldata": "0x6e6e8a6a0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a10000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001d1e4e4ea00000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a100000000000000000000000000000000000000000000000000000000000493e00000000000000000000000000000000000000000000000000000000005f5e10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000003abcdef0000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function calculateRetryableSubmissionFee(uint256 dataLength, uint256 baseFee) view returns (uint256)",
+   "selector": "0xa66b327d",
+   "args": [
+    "0",
+    "336886"
+   ],
+   "calldata": "0xa66b327d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000523f6"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function calculateRetryableSubmissionFee(uint256 dataLength, uint256 baseFee) view returns (uint256)",
+   "selector": "0xa66b327d",
+   "args": [
+    "70",
+    "0"
+   ],
+   "calldata": "0xa66b327d00000000000000000000000000000000000000000000000000000000000000460000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "function sendL2Message(bytes messageData) returns (uint256)",
+   "selector": "0xb75436bb",
+   "args": [
+    "0x0102"
+   ],
+   "calldata": "0xb75436bb000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000020102000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Outbox",
+   "signature": "function executeTransaction(bytes32[] proof, uint256 index, address l2Sender, address to, uint256 l2Block, uint256 l1Block, uint256 l2Timestamp, uint256 value, bytes data)",
+   "selector": "0x08635a95",
+   "args": [
+    [
+     "0x0101010101010101010101010101010101010101010101010101010101010101",
+     "0x0202020202020202020202020202020202020202020202020202020202020202",
+     "0x0303030303030303030303030303030303030303030303030303030303030303"
+    ],
+    "5",
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "15620000",
+    "67847915",
+    "1793000000",
+    "1000000000000000",
+    "0xdeadbeef"
+   ],
+   "calldata": "0x08635a9500000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a10000000000000000000000000000000000000000000000000000000000ee57a000000000000000000000000000000000000000000000000000000000040b46eb000000000000000000000000000000000000000000000000000000006adf024000000000000000000000000000000000000000000000000000038d7ea4c6800000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000000030101010101010101010101010101010101010101010101010101010101010101020202020202020202020202020202020202020202020202020202020202020203030303030303030303030303030303030303030303030303030303030303030000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "Outbox",
+   "signature": "function isSpent(uint256 index) view returns (bool)",
+   "selector": "0x5a129efe",
+   "args": [
+    "747176"
+   ],
+   "calldata": "0x5a129efe00000000000000000000000000000000000000000000000000000000000b66a8"
+  },
+  {
+   "contract": "Outbox",
+   "signature": "function roots(bytes32) view returns (bytes32)",
+   "selector": "0xae6dead7",
+   "args": [
+    "0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+   ],
+   "calldata": "0xae6dead70f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function latestConfirmed() view returns (bytes32)",
+   "selector": "0x65f7f80d",
+   "args": [],
+   "calldata": "0x65f7f80d"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function getAssertion(bytes32 assertionHash) view returns ((uint64 firstChildBlock, uint64 secondChildBlock, uint64 createdAtBlock, bool isFirstChild, uint8 status, bytes32 configHash))",
+   "selector": "0x88302884",
+   "args": [
+    "0xc2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+   ],
+   "calldata": "0x88302884c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function getAssertionCreationBlockForLogLookup(bytes32 assertionHash) view returns (uint256)",
+   "selector": "0x13c56ca7",
+   "args": [
+    "0xc2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+   ],
+   "calldata": "0x13c56ca7c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function confirmPeriodBlocks() view returns (uint64)",
+   "selector": "0x2e7acfa6",
+   "args": [],
+   "calldata": "0x2e7acfa6"
+  },
+  {
+   "contract": "Multicall3",
+   "signature": "function aggregate3((address target, bool allowFailure, bytes callData)[] calls) payable returns ((bool success, bytes returnData)[] returnData)",
+   "selector": "0x82ad56cb",
+   "args": [
+    [
+     [
+      "0x0000000000000000000000000000000000000064",
+      "false",
+      "0xd127f54a"
+     ],
+     [
+      "0x000000000000000000000000000000000000006e",
+      "true",
+      "0x9f1025c60000000000000000000000000000000000000000000000000000000000000000"
+     ]
+    ]
+   ],
+   "calldata": "0x82ad56cb00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000004d127f54a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006e0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000249f1025c6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+   "contract": "ERC20",
+   "signature": "function allowance(address owner, address spender) view returns (uint256)",
+   "selector": "0xdd62ed3e",
+   "args": [
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1"
+   ],
+   "calldata": "0xdd62ed3e000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1"
+  },
+  {
+   "contract": "ERC20",
+   "signature": "function transferFrom(address sender, address recipient, uint256 amount) returns (bool)",
+   "selector": "0x23b872dd",
+   "args": [
+    "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "1500000"
+   ],
+   "calldata": "0x23b872dd000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba91640000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1000000000000000000000000000000000000000000000000000000000016e360"
+  },
+  {
+   "contract": "ERC20",
+   "signature": "function totalSupply() view returns (uint256)",
+   "selector": "0x18160ddd",
+   "args": [],
+   "calldata": "0x18160ddd"
+  },
+  {
+   "contract": "ERC20",
+   "signature": "function name() view returns (string)",
+   "selector": "0x06fdde03",
+   "args": [],
+   "calldata": "0x06fdde03"
+  },
+  {
+   "contract": "Outbox",
+   "signature": "function executeTransaction(bytes32[] proof, uint256 index, address l2Sender, address to, uint256 l2Block, uint256 l1Block, uint256 l2Timestamp, uint256 value, bytes data)",
+   "selector": "0x08635a95",
+   "args": [
+    [
+     "0x12f29d0c332539e1ea15966ffcf50fe0333230650f55cf4d46c09d5f1eabe851",
+     "0x19842cef8db101be3a364ae76c249628cddda1b425fcd1303c5a88f23fb7a138",
+     "0x0003c1746648de15f3c8cfef75ce16df9b25b45f24bd6f7bc409a8be41f1cf61",
+     "0xd64d9cd70ba988c5bd823c41a18cdc13b1591ae0845d90635450849f9cfed2bf",
+     "0x663a36c2d1ff9ca75066eddb10e1ee89095d6683e611e39932fff5e0a9473abb",
+     "0xf5d6ef31da71c6dd3b01d4150bf070756435fd776acbff9e4b1668fbe404bb98",
+     "0xcc4ca222927029eb6a20a4210a50501b79f0e138c5961c9d6d0f5c3a3f4e0cf9",
+     "0x16f4a9346b8225e5ace685353701084214f6cc81c8f267bc2275853483a5406c",
+     "0x9eb058896fb73cc8f057664da2a4b02a4ac5e54a3a77335afb7057f6e94f271b",
+     "0x0b5702db621b84b304ceeb37f155112015c11ad8934a7e70ec1fa44b7ed734a3",
+     "0x74d46cf7e015c3c02959b81c3752b2a7a5bed30590c92348579832d72afb610b",
+     "0xa4e2b88b542ffbb9e210b6955b42b2713445d6ff3e70907073ea3efa06dcf81a",
+     "0xb8ce6994f69525c19f5fb1a499997ae3291b82d7a8359040039bad7cd7c7712e",
+     "0xeefda6340cbdf8b64f76d767678fa864ce8a6fa9538df20d98b4c491ae11347f",
+     "0xb698fd7cd156c1a26121f2ee0e834aeb76fefc244930f4fce5938a067a3e02fc",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x786ea9f457bfe3c4ac1f01844ccb2cd10c983661677db9e695614135aeb90554",
+     "0x5feff8c9364d945ac4bb6ac2c151106ffd9b567661a02a3269422d4b695b0776",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x1889cd91b6563198b0b32939d068a4518e42e5828b01e1e8bd7d513083dcbcff"
+    ],
+    "743764",
+    "0x501707afe59da414b197d3e7388414ac1ca0dceb",
+    "0x501707afe59da414b197d3e7388414ac1ca0dceb",
+    "15469885",
+    "67828067",
+    "1792912186",
+    "10000000000000000",
+    "0x"
+   ],
+   "calldata": "0x08635a95000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000b5954000000000000000000000000501707afe59da414b197d3e7388414ac1ca0dceb000000000000000000000000501707afe59da414b197d3e7388414ac1ca0dceb0000000000000000000000000000000000000000000000000000000000ec0d3d00000000000000000000000000000000000000000000000000000000040af963000000000000000000000000000000000000000000000000000000006addab3a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000003c0000000000000000000000000000000000000000000000000000000000000001412f29d0c332539e1ea15966ffcf50fe0333230650f55cf4d46c09d5f1eabe85119842cef8db101be3a364ae76c249628cddda1b425fcd1303c5a88f23fb7a1380003c1746648de15f3c8cfef75ce16df9b25b45f24bd6f7bc409a8be41f1cf61d64d9cd70ba988c5bd823c41a18cdc13b1591ae0845d90635450849f9cfed2bf663a36c2d1ff9ca75066eddb10e1ee89095d6683e611e39932fff5e0a9473abbf5d6ef31da71c6dd3b01d4150bf070756435fd776acbff9e4b1668fbe404bb98cc4ca222927029eb6a20a4210a50501b79f0e138c5961c9d6d0f5c3a3f4e0cf916f4a9346b8225e5ace685353701084214f6cc81c8f267bc2275853483a5406c9eb058896fb73cc8f057664da2a4b02a4ac5e54a3a77335afb7057f6e94f271b0b5702db621b84b304ceeb37f155112015c11ad8934a7e70ec1fa44b7ed734a374d46cf7e015c3c02959b81c3752b2a7a5bed30590c92348579832d72afb610ba4e2b88b542ffbb9e210b6955b42b2713445d6ff3e70907073ea3efa06dcf81ab8ce6994f69525c19f5fb1a499997ae3291b82d7a8359040039bad7cd7c7712eeefda6340cbdf8b64f76d767678fa864ce8a6fa9538df20d98b4c491ae11347fb698fd7cd156c1a26121f2ee0e834aeb76fefc244930f4fce5938a067a3e02fc0000000000000000000000000000000000000000000000000000000000000000786ea9f457bfe3c4ac1f01844ccb2cd10c983661677db9e695614135aeb905545feff8c9364d945ac4bb6ac2c151106ffd9b567661a02a3269422d4b695b077600000000000000000000000000000000000000000000000000000000000000001889cd91b6563198b0b32939d068a4518e42e5828b01e1e8bd7d513083dcbcff0000000000000000000000000000000000000000000000000000000000000000",
+   "live": "HyperEVM testnet transaction 0x0e7b2493723fcc8ba17155cec6c05121945eb62b068d97c30b35c1a51c927b1b, to 0x87391d602aaffb3fe8051eccdb75d6eee8c31060"
+  }
+ ],
+ "events": [
+  {
+   "contract": "ArbSys",
+   "signature": "event L2ToL1Tx(address caller, address indexed destination, uint256 indexed hash, uint256 indexed position, uint256 arbBlockNum, uint256 ethBlockNum, uint256 timestamp, uint256 callvalue, bytes data)",
+   "topic": "0x3e7aafa77dbf186b7fd488006beff893744caa3c4f6f299e8a709fa2087374fc",
+   "log": {
+    "address": "0x0000000000000000000000000000000000000064",
+    "topics": [
+     "0x3e7aafa77dbf186b7fd488006beff893744caa3c4f6f299e8a709fa2087374fc",
+     "0x0000000000000000000000000d370acfec7cbce20335505c27b5c305fa8a3f60",
+     "0x9e1ee39eba7eb69944cef5cbd25dee1f084b87967baa060f108feb681ef34109",
+     "0x00000000000000000000000000000000000000000000000000000000000b668d"
+    ],
+    "data": "0x0000000000000000000000000d370acfec7cbce20335505c27b5c305fa8a3f600000000000000000000000000000000000000000000000000000000000ee70ce00000000000000000000000000000000000000000000000000000000040b4a3b000000000000000000000000000000000000000000000000000000006addfb2400000000000000000000000000000000000000000000000000012f03d82ab34900000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000"
+   },
+   "decoded": {
+    "destination": "0x0d370acfec7cbce20335505c27b5c305fa8a3f60",
+    "hash": "71520006463831948829368604840393160443743959000507075695442027075912271610121",
+    "position": "747149",
+    "caller": "0x0d370acfec7cbce20335505c27b5c305fa8a3f60",
+    "arbBlockNum": "15626446",
+    "ethBlockNum": "67848763",
+    "timestamp": "1792932644",
+    "callvalue": "333168534795081",
+    "data": "0x"
+   },
+   "live": "Elysium testnet transaction 0xb43edfe24c26728cd16e066402c70e2bbd3429c3898a4762d664e4b8c0a486ae"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "event SendMerkleUpdate(uint256 indexed reserved, bytes32 indexed hash, uint256 indexed position)",
+   "topic": "0xe9e13da364699fb5b0496ff5a0fc70760ad5836e93ba96568a4e42b9914a8b95",
+   "log": {
+    "address": "0x0000000000000000000000000000000000000064",
+    "topics": [
+     "0xe9e13da364699fb5b0496ff5a0fc70760ad5836e93ba96568a4e42b9914a8b95",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x929b2340faa03d16500a02dc4184be46f4841af10f369fc8c2c1fcba497b36b4",
+     "0x00000000000000010000000000000000000000000000000000000000000b668d"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "reserved": "0",
+    "hash": "0x929b2340faa03d16500a02dc4184be46f4841af10f369fc8c2c1fcba497b36b4",
+    "position": "6277101735386680763835789423207666416102355444464035260045"
+   },
+   "live": "Elysium testnet transaction 0xb43edfe24c26728cd16e066402c70e2bbd3429c3898a4762d664e4b8c0a486ae"
+  },
+  {
+   "contract": "ArbSys",
+   "signature": "event L2ToL1Transaction(address caller, address indexed destination, uint256 indexed uniqueId, uint256 indexed batchNumber, uint256 indexInBatch, uint256 arbBlockNum, uint256 ethBlockNum, uint256 timestamp, uint256 callvalue, bytes data)",
+   "topic": "0x5baaa87db386365b5c161be377bc3d8e317e8d98d71a3ca7ed7d555340c8f767",
+   "log": {
+    "address": "0x0000000000000000000000000000000000000064",
+    "topics": [
+     "0x5baaa87db386365b5c161be377bc3d8e317e8d98d71a3ca7ed7d555340c8f767",
+     "0x0000000000000000000000008499e50474b6e8c988b232f52583439abf37a8a1",
+     "0x0000000000000000000000000000000000000000000000000000000000000009",
+     "0x0000000000000000000000000000000000000000000000000000000000000002"
+    ],
+    "data": "0x000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba916400000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000ee57a000000000000000000000000000000000000000000000000000000000040b46eb000000000000000000000000000000000000000000000000000000006adf024000000000000000000000000000000000000000000000000000038d7ea4c6800000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000"
+   },
+   "decoded": {
+    "destination": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "uniqueId": "9",
+    "batchNumber": "2",
+    "caller": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+    "indexInBatch": "1",
+    "arbBlockNum": "15620000",
+    "ethBlockNum": "67847915",
+    "timestamp": "1793000000",
+    "callvalue": "1000000000000000",
+    "data": "0xdeadbeef"
+   },
+   "synthetic": true
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "event TicketCreated(bytes32 indexed ticketId)",
+   "topic": "0x7c793cced5743dc5f531bbe2bfb5a9fa3f40adef29231e6ab165c08a29e3dd89",
+   "log": {
+    "address": "0x000000000000000000000000000000000000006e",
+    "topics": [
+     "0x7c793cced5743dc5f531bbe2bfb5a9fa3f40adef29231e6ab165c08a29e3dd89",
+     "0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "ticketId": "0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13"
+   },
+   "live": "Elysium testnet transaction 0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "event RedeemScheduled(bytes32 indexed ticketId, bytes32 indexed retryTxHash, uint64 indexed sequenceNum, uint64 donatedGas, address gasDonor, uint256 maxRefund, uint256 submissionFeeRefund)",
+   "topic": "0x5ccd009502509cf28762c67858994d85b163bb6e451f5e9df7c5e18c9c2e123e",
+   "log": {
+    "address": "0x000000000000000000000000000000000000006e",
+    "topics": [
+     "0x5ccd009502509cf28762c67858994d85b163bb6e451f5e9df7c5e18c9c2e123e",
+     "0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13",
+     "0xba248fc3d08d0de9db84a40b1615fa9553c694acc453bd52a947d50104bc4d9b",
+     "0x0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "data": "0x00000000000000000000000000000000000000000000000000000000000493e000000000000000000000000053e21cfddd1af38dc8609a80c4da0cea8753d5fe00000000000000000000000000000000000000000000000000001b84e57ff0000000000000000000000000000000000000000000000000000000003bfa281000"
+   },
+   "decoded": {
+    "ticketId": "0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13",
+    "retryTxHash": "0xba248fc3d08d0de9db84a40b1615fa9553c694acc453bd52a947d50104bc4d9b",
+    "sequenceNum": "0",
+    "donatedGas": "300000",
+    "gasDonor": "0x53e21cfddd1af38dc8609a80c4da0cea8753d5fe",
+    "maxRefund": "30257600000000",
+    "submissionFeeRefund": "257600000000"
+   },
+   "live": "Elysium testnet transaction 0x83884dbaaea1666ed47ace5670d9b744575bd225f437b2f5599c354a1df9cc13"
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "event Canceled(bytes32 indexed ticketId)",
+   "topic": "0x134fdd648feeaf30251f0157f9624ef8608ff9a042aad6d13e73f35d21d3f88d",
+   "log": {
+    "address": "0x000000000000000000000000000000000000006e",
+    "topics": [
+     "0x134fdd648feeaf30251f0157f9624ef8608ff9a042aad6d13e73f35d21d3f88d",
+     "0x1212121212121212121212121212121212121212121212121212121212121212"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "ticketId": "0x1212121212121212121212121212121212121212121212121212121212121212"
+   },
+   "synthetic": true
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "event LifetimeExtended(bytes32 indexed ticketId, uint256 newTimeout)",
+   "topic": "0xf4c40a5f930e1469fcc053bf25f045253a7bad2fcc9b88c05ec1fca8e2066b83",
+   "log": {
+    "address": "0x000000000000000000000000000000000000006e",
+    "topics": [
+     "0xf4c40a5f930e1469fcc053bf25f045253a7bad2fcc9b88c05ec1fca8e2066b83",
+     "0x1212121212121212121212121212121212121212121212121212121212121212"
+    ],
+    "data": "0x000000000000000000000000000000000000000000000000000000006ae83cc0"
+   },
+   "decoded": {
+    "ticketId": "0x1212121212121212121212121212121212121212121212121212121212121212",
+    "newTimeout": "1793604800"
+   },
+   "synthetic": true
+  },
+  {
+   "contract": "ArbRetryableTx",
+   "signature": "event Redeemed(bytes32 indexed userTxHash)",
+   "topic": "0x27fc6cca2a0e9eb6f4876c01fc7779b00cdeb7277a770ac2b844db5932449578",
+   "log": {
+    "address": "0x000000000000000000000000000000000000006e",
+    "topics": [
+     "0x27fc6cca2a0e9eb6f4876c01fc7779b00cdeb7277a770ac2b844db5932449578",
+     "0x3434343434343434343434343434343434343434343434343434343434343434"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "userTxHash": "0x3434343434343434343434343434343434343434343434343434343434343434"
+   },
+   "synthetic": true
+  },
+  {
+   "contract": "Bridge",
+   "signature": "event MessageDelivered(uint256 indexed messageIndex, bytes32 indexed beforeInboxAcc, address inbox, uint8 kind, address sender, bytes32 messageDataHash, uint256 baseFeeL1, uint64 timestamp)",
+   "topic": "0x5e3c1311ea442664e8b1611bfabef659120ea7a0a2cfc0667700bebc69cbffe1",
+   "log": {
+    "address": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+    "topics": [
+     "0x5e3c1311ea442664e8b1611bfabef659120ea7a0a2cfc0667700bebc69cbffe1",
+     "0x000000000000000000000000000000000000000000000000000000000016c9d4",
+     "0x45bc413f96e938155324b30d6deb39be11054f0e786e6ebfe822459cb3b8026d"
+    ],
+    "data": "0x00000000000000000000000011178df40cbf87a4343f4b3f8b09b366cefa8ec0000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000001abf96a8dbf6aa8b7bef332fa7b1cb0b0e36c77ea58b74a413b77c15cd24e5660854904b8271e6eefa2328a4f41a1eb3b6726fc80000000000000000000000000000000000000000000000000000000005f5e100000000000000000000000000000000000000000000000000000000006addfab1"
+   },
+   "decoded": {
+    "messageIndex": "1493460",
+    "beforeInboxAcc": "0x45bc413f96e938155324b30d6deb39be11054f0e786e6ebfe822459cb3b8026d",
+    "inbox": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+    "kind": "12",
+    "sender": "0x1abf96a8dbf6aa8b7bef332fa7b1cb0b0e36c77e",
+    "messageDataHash": "0xa58b74a413b77c15cd24e5660854904b8271e6eefa2328a4f41a1eb3b6726fc8",
+    "baseFeeL1": "100000000",
+    "timestamp": "1792932529"
+   },
+   "live": "HyperEVM testnet transaction 0xa26c60f216c8e641b8a1b72b4a1381cbc8805a87cd492754ec467ed0b2d55446"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "event InboxMessageDelivered(uint256 indexed messageNum, bytes data)",
+   "topic": "0xff64905f73a67fb594e0f940a8075a860db489ad991e032f48c81123eb52d60b",
+   "log": {
+    "address": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+    "topics": [
+     "0xff64905f73a67fb594e0f940a8075a860db489ad991e032f48c81123eb52d60b",
+     "0x000000000000000000000000000000000000000000000000000000000016c9d4"
+    ],
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003409ae96a8dbf6aa8b7bef332fa7b1cb0b0e36b66d00000000000000000000000000000000000000000000000000071afd498d0000000000000000000000000000"
+   },
+   "decoded": {
+    "messageNum": "1493460",
+    "data": "0x09ae96a8dbf6aa8b7bef332fa7b1cb0b0e36b66d00000000000000000000000000000000000000000000000000071afd498d0000"
+   },
+   "live": "HyperEVM testnet transaction 0xa26c60f216c8e641b8a1b72b4a1381cbc8805a87cd492754ec467ed0b2d55446"
+  },
+  {
+   "contract": "Inbox",
+   "signature": "event InboxMessageDeliveredFromOrigin(uint256 indexed messageNum)",
+   "topic": "0xab532385be8f1005a4b6ba8fa20a2245facb346134ac739fe9a5198dc1580b9c",
+   "log": {
+    "address": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+    "topics": [
+     "0xab532385be8f1005a4b6ba8fa20a2245facb346134ac739fe9a5198dc1580b9c",
+     "0x000000000000000000000000000000000000000000000000000000000016c98a"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "messageNum": "1493386"
+   },
+   "synthetic": true
+  },
+  {
+   "contract": "Outbox",
+   "signature": "event OutBoxTransactionExecuted(address indexed to, address indexed l2Sender, uint256 indexed zero, uint256 transactionIndex)",
+   "topic": "0x20af7f3bbfe38132b8900ae295cd9c8d1914be7052d061a511f3f728dab18964",
+   "log": {
+    "address": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+    "topics": [
+     "0x20af7f3bbfe38132b8900ae295cd9c8d1914be7052d061a511f3f728dab18964",
+     "0x000000000000000000000000501707afe59da414b197d3e7388414ac1ca0dceb",
+     "0x000000000000000000000000501707afe59da414b197d3e7388414ac1ca0dceb",
+     "0x0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "data": "0x00000000000000000000000000000000000000000000000000000000000b5954"
+   },
+   "decoded": {
+    "to": "0x501707afe59da414b197d3e7388414ac1ca0dceb",
+    "l2Sender": "0x501707afe59da414b197d3e7388414ac1ca0dceb",
+    "zero": "0",
+    "transactionIndex": "743764"
+   },
+   "live": "HyperEVM testnet transaction 0x0e7b2493723fcc8ba17155cec6c05121945eb62b068d97c30b35c1a51c927b1b"
+  },
+  {
+   "contract": "Outbox",
+   "signature": "event SendRootUpdated(bytes32 indexed outputRoot, bytes32 indexed l2BlockHash)",
+   "topic": "0xb4df3847300f076a369cd76d2314b470a1194d9e8a6bb97f1860aee88a5f6748",
+   "log": {
+    "address": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+    "topics": [
+     "0xb4df3847300f076a369cd76d2314b470a1194d9e8a6bb97f1860aee88a5f6748",
+     "0x122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e",
+     "0x0ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab"
+    ],
+    "data": "0x"
+   },
+   "decoded": {
+    "outputRoot": "0x122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e",
+    "l2BlockHash": "0x0ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab"
+   },
+   "live": "HyperEVM testnet transaction 0xefc3cf19b2026cfff6e29cb9fd5a568cb9db4f9ce549619d184549cf6c2ca173"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "event AssertionConfirmed(bytes32 indexed assertionHash, bytes32 blockHash, bytes32 sendRoot)",
+   "topic": "0xfc42829b29c259a7370ab56c8f69fce23b5f351a9ce151da453281993ec0090c",
+   "log": {
+    "address": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+    "topics": [
+     "0xfc42829b29c259a7370ab56c8f69fce23b5f351a9ce151da453281993ec0090c",
+     "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569"
+    ],
+    "data": "0x0ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e"
+   },
+   "decoded": {
+    "assertionHash": "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569",
+    "blockHash": "0x0ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab",
+    "sendRoot": "0x122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e"
+   },
+   "live": "HyperEVM testnet transaction 0xefc3cf19b2026cfff6e29cb9fd5a568cb9db4f9ce549619d184549cf6c2ca173"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "event AssertionCreated(bytes32 indexed assertionHash, bytes32 indexed parentAssertionHash, ((bytes32 prevPrevAssertionHash, bytes32 sequencerBatchAcc, (bytes32 wasmModuleRoot, uint256 requiredStake, address challengeManager, uint64 confirmPeriodBlocks, uint64 nextInboxPosition) configData) beforeStateData, ((bytes32[2] bytes32Vals, uint64[2] u64Vals) globalState, uint8 machineStatus, bytes32 endHistoryRoot) beforeState, ((bytes32[2] bytes32Vals, uint64[2] u64Vals) globalState, uint8 machineStatus, bytes32 endHistoryRoot) afterState) assertion, bytes32 afterInboxBatchAcc, uint256 inboxMaxCount, bytes32 wasmModuleRoot, uint256 requiredStake, address challengeManager, uint64 confirmPeriodBlocks)",
+   "topic": "0x901c3aee23cf4478825462caaab375c606ab83516060388344f0650340753630",
+   "log": {
+    "address": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+    "topics": [
+     "0x901c3aee23cf4478825462caaab375c606ab83516060388344f0650340753630",
+     "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569",
+     "0x76a8cc1f974c973abced5bf6daade415b8f40f362094ca20bf4a94cba74e5f4a"
+    ],
+    "data": "0xf94d313a09bc4200c17c0c743eee7a9b71a66800ddad880a42f029c9f90e492d6bfc7011cb657e3ca756a1802bc1a2aa040b51f1df1a1545aaf4ef0764685164c10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000754429325cf02835ca17fcfba9fc059cb2835b6000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000d6f1751c5a180d6ea6ba90c7874a6d51c64dd67a68842e97d31a0002da3cdbdecbedd911c0839845dd39db487c622985737740fb265eeb0f79bcd43917ca42ab9760000000000000000000000000000000000000000000000000000000000000d6e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000015ae8de377e581a0ee8e537ad5ff53b56874a90ab3ff237d8fc805eb26d1425190ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e0000000000000000000000000000000000000000000000000000000000000d6f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016495d6b42bef37d8ffaeb04f52b99d17332f19f1bcca41c56382fc896f7847b520234068259e1710d3209f3a43423a8259cad4146065f19e95d987ab1aec17040000000000000000000000000000000000000000000000000000000000000d70c10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000754429325cf02835ca17fcfba9fc059cb2835b6000000000000000000000000000000000000000000000000000000000000000a"
+   },
+   "decoded": {
+    "assertionHash": "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569",
+    "parentAssertionHash": "0x76a8cc1f974c973abced5bf6daade415b8f40f362094ca20bf4a94cba74e5f4a",
+    "assertion": {
+     "beforeStateData": {
+      "prevPrevAssertionHash": "0xf94d313a09bc4200c17c0c743eee7a9b71a66800ddad880a42f029c9f90e492d",
+      "sequencerBatchAcc": "0x6bfc7011cb657e3ca756a1802bc1a2aa040b51f1df1a1545aaf4ef0764685164",
+      "configData": {
+       "wasmModuleRoot": "0xc10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97",
+       "requiredStake": "100000000000000000",
+       "challengeManager": "0x0754429325cf02835ca17fcfba9fc059cb2835b6",
+       "confirmPeriodBlocks": "10",
+       "nextInboxPosition": "3439"
+      }
+     },
+     "beforeState": {
+      "globalState": {
+       "bytes32Vals": [
+        "0x1751c5a180d6ea6ba90c7874a6d51c64dd67a68842e97d31a0002da3cdbdecbe",
+        "0xdd911c0839845dd39db487c622985737740fb265eeb0f79bcd43917ca42ab976"
+       ],
+       "u64Vals": [
+        "3438",
+        "0"
+       ]
+      },
+      "machineStatus": "1",
+      "endHistoryRoot": "0x5ae8de377e581a0ee8e537ad5ff53b56874a90ab3ff237d8fc805eb26d142519"
+     },
+     "afterState": {
+      "globalState": {
+       "bytes32Vals": [
+        "0x0ff918c8a7a2a3b3ca73443383d070926a9f68c28e7a922387313d9f7085b0ab",
+        "0x122dbff5e5af85b6e05de631808cb5b5fd29561b29239eb73e559c67a37e364e"
+       ],
+       "u64Vals": [
+        "3439",
+        "0"
+       ]
+      },
+      "machineStatus": "1",
+      "endHistoryRoot": "0x6495d6b42bef37d8ffaeb04f52b99d17332f19f1bcca41c56382fc896f7847b5"
+     }
+    },
+    "afterInboxBatchAcc": "0x20234068259e1710d3209f3a43423a8259cad4146065f19e95d987ab1aec1704",
+    "inboxMaxCount": "3440",
+    "wasmModuleRoot": "0xc10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97",
+    "requiredStake": "100000000000000000",
+    "challengeManager": "0x0754429325cf02835ca17fcfba9fc059cb2835b6",
+    "confirmPeriodBlocks": "10"
+   },
+   "live": "HyperEVM testnet transaction 0x807f81a4449e5e8f87f8b31e4e8f098df0f7f09bd2eb73da33bed27d551509b1, block 67847915: the assertion latestConfirmed() named"
+  }
+ ],
+ "answers": [
+  {
+   "contract": "ArbGasInfo",
+   "signature": "function getPricesInWei() view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
+   "data": "0x000000000000000000000000000000000000000000000000000000003236894000000000000000000000000000000000000000000000000000000000005bd170000000000000000000000000000000000000000000000000000001d1d8f928000000000000000000000000000000000000000000000000000000000005f5e1000000000000000000000000000000000000000000000000000000000000009c400000000000000000000000000000000000000000000000000000000005f67d40",
+   "decoded": [
+    "842434880",
+    "6017392",
+    "2000800000000",
+    "100000000",
+    "40000",
+    "100040000"
+   ],
+   "live": "Elysium testnet, eth_call at latest"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function gasEstimateComponents(address to, bool contractCreation, bytes data) payable returns (uint64 gasEstimate, uint64 gasEstimateForL1, uint256 baseFee, uint256 l1BaseFeeEstimate)",
+   "data": "0x00000000000000000000000000000000000000000000000000000000000052b600000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000005f6cb60000000000000000000000000000000000000000000000000000000000005bd17",
+   "decoded": [
+    "21174",
+    "9",
+    "100060000",
+    "376087"
+   ],
+   "live": "Elysium testnet: a 1 wei HYPE transfer from 0xa16a365ae8f34edadb8157849d4ace274bba9164 to 0x8499e50474b6e8c988b232f52583439abf37a8a1"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function constructOutboxProof(uint64 size, uint64 leaf) view returns (bytes32 send, bytes32 root, bytes32[] proof)",
+   "data": "0x038ec47d0a05d859af7383cb0d6121165c98fa4a885e8cb6bc1617d73dcce7352ee782fbdc3d1fb9c7eefb11c0761208e7e3d903b9d54b2f903e846b06779979000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ba61ddef9dd72ca28393b201ed7dd35b4aa75c25719ef46ff790cf0a0fdcb2e000000000000000000000000000000000000000000000000000000000000000026a3ea2da0a054e8c70a111b8323f83f11f526e171b8e7177da3841760c20bc200000000000000000000000000000000000000000000000000000000000000004e4b7972e26bbe716d96df0b99a9584471e7104195d44925019f0af02611d81f000000000000000000000000000000000000000000000000000000000000000019338fc162d903c4ed532c2b90370cd9ee878a83dd5a0d717746820ef7c970895ed3ba70c13fc57b2ce54bdb335d9c20b01cb8eadfe15d6d1cd3eda42770b1380000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023522c2e96f65919257327d9e39a5c4a9c80e051ca68cedd00257f005743419ab698fd7cd156c1a26121f2ee0e834aeb76fefc244930f4fce5938a067a3e02fc0000000000000000000000000000000000000000000000000000000000000000786ea9f457bfe3c4ac1f01844ccb2cd10c983661677db9e695614135aeb905545feff8c9364d945ac4bb6ac2c151106ffd9b567661a02a3269422d4b695b077600000000000000000000000000000000000000000000000000000000000000001889cd91b6563198b0b32939d068a4518e42e5828b01e1e8bd7d513083dcbcff",
+   "decoded": [
+    "0x038ec47d0a05d859af7383cb0d6121165c98fa4a885e8cb6bc1617d73dcce735",
+    "0x2ee782fbdc3d1fb9c7eefb11c0761208e7e3d903b9d54b2f903e846b06779979",
+    [
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x0ba61ddef9dd72ca28393b201ed7dd35b4aa75c25719ef46ff790cf0a0fdcb2e",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x26a3ea2da0a054e8c70a111b8323f83f11f526e171b8e7177da3841760c20bc2",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x4e4b7972e26bbe716d96df0b99a9584471e7104195d44925019f0af02611d81f",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x19338fc162d903c4ed532c2b90370cd9ee878a83dd5a0d717746820ef7c97089",
+     "0x5ed3ba70c13fc57b2ce54bdb335d9c20b01cb8eadfe15d6d1cd3eda42770b138",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x23522c2e96f65919257327d9e39a5c4a9c80e051ca68cedd00257f005743419a",
+     "0xb698fd7cd156c1a26121f2ee0e834aeb76fefc244930f4fce5938a067a3e02fc",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x786ea9f457bfe3c4ac1f01844ccb2cd10c983661677db9e695614135aeb90554",
+     "0x5feff8c9364d945ac4bb6ac2c151106ffd9b567661a02a3269422d4b695b0776",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x1889cd91b6563198b0b32939d068a4518e42e5828b01e1e8bd7d513083dcbcff"
+    ]
+   ],
+   "live": "Elysium testnet: size 747177, leaf 747176"
+  },
+  {
+   "contract": "NodeInterface",
+   "signature": "function constructOutboxProof(uint64 size, uint64 leaf) view returns (bytes32 send, bytes32 root, bytes32[] proof)",
+   "data": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003010101010101010101010101010101010101010101010101010101010101010102020202020202020202020202020202020202020202020202020202020202020303030303030303030303030303030303030303030303030303030303030303",
+   "decoded": [
+    "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    [
+     "0x0101010101010101010101010101010101010101010101010101010101010101",
+     "0x0202020202020202020202020202020202020202020202020202020202020202",
+     "0x0303030303030303030303030303030303030303030303030303030303030303"
+    ]
+   ],
+   "synthetic": true
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function latestConfirmed() view returns (bytes32)",
+   "data": "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569",
+   "decoded": "0x143a3deda8eff1a0368b98edd4961c9766f1b8c22ddce95cfaf140da8b66d569",
+   "live": "HyperEVM testnet, Elysium rollup 0xebf08e34941fd93a0fc1cd89dbbf7447267039df"
+  },
+  {
+   "contract": "Rollup",
+   "signature": "function getAssertion(bytes32 assertionHash) view returns ((uint64 firstChildBlock, uint64 secondChildBlock, uint64 createdAtBlock, bool isFirstChild, uint8 status, bytes32 configHash))",
+   "data": "0x00000000000000000000000000000000000000000000000000000000040b4a7e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040b46eb00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002c214cd176e09fe5f1138beed9139e82f2461733c3792f37e974594c9b09c6c02",
+   "decoded": {
+    "firstChildBlock": "67848830",
+    "secondChildBlock": "0",
+    "createdAtBlock": "67847915",
+    "isFirstChild": "true",
+    "status": "2",
+    "configHash": "0xc214cd176e09fe5f1138beed9139e82f2461733c3792f37e974594c9b09c6c02"
+   },
+   "live": "HyperEVM testnet: the assertion latestConfirmed() named"
+  },
+  {
+   "contract": "Multicall3",
+   "signature": "function aggregate3((address target, bool allowFailure, bytes callData)[] calls) payable returns ((bool success, bytes returnData)[] returnData)",
+   "data": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000185d90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000048069845600000000000000000000000000000000000000000000000000000000",
+   "decoded": [
+    {
+     "success": "true",
+     "returnData": "0x00000000000000000000000000000000000000000000000000000000000185d9"
+    },
+    {
+     "success": "false",
+     "returnData": "0x80698456"
+    }
+   ],
+   "live": "Elysium testnet: arbChainID(), then getTimeout(0x00..00), which reverts NoTicketWithID() (0x80698456)"
+  }
+ ],
+ "transactions": [
+  {
+   "name": "HYPE transfer",
+   "fields": {
+    "type": "eip1559",
+    "chainId": "99801",
+    "nonce": "0",
+    "maxPriorityFeePerGas": "0",
+    "maxFeePerGas": "200000000",
+    "gas": "21173",
+    "to": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "value": "1000000000000000",
+    "data": "0x",
+    "accessList": []
+   },
+   "unsigned": "0x02ed830185d98080840bebc2008252b5948499e50474b6e8c988b232f52583439abf37a8a187038d7ea4c6800080c0",
+   "signingHash": "0x3b79bc1f64125fb546ec34edf989cdd85ff22702430df2971923148cfae18ace",
+   "signed": "0x02f870830185d98080840bebc2008252b5948499e50474b6e8c988b232f52583439abf37a8a187038d7ea4c6800080c001a02c91ad12521d2c53ecced634d43c1a39a04e28924f2038fda64ba12eb0ad2fdca011553582fb1541a256c1fe10b085873e991b4478617371c6969e34c597017626",
+   "hash": "0x7bbbe500c0f80d64bc954865b1444ccfb9169493dec8757369610748dce008d8",
+   "parsed": {
+    "r": "0x2c91ad12521d2c53ecced634d43c1a39a04e28924f2038fda64ba12eb0ad2fdc",
+    "s": "0x11553582fb1541a256c1fe10b085873e991b4478617371c6969e34c597017626",
+    "v": "28",
+    "yParity": "1",
+    "chainId": "99801",
+    "type": "eip1559",
+    "to": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gas": "21173",
+    "nonce": "0",
+    "value": "1000000000000000",
+    "maxFeePerGas": "200000000"
+   }
+  },
+  {
+   "name": "contract creation",
+   "fields": {
+    "type": "eip1559",
+    "chainId": "99801",
+    "nonce": "3",
+    "maxPriorityFeePerGas": "0",
+    "maxFeePerGas": "200000000",
+    "gas": "60000",
+    "value": "0",
+    "data": "0x600180600b6000396000f300",
+    "accessList": []
+   },
+   "unsigned": "0x02de830185d90380840bebc20082ea6080808c600180600b6000396000f300c0",
+   "signingHash": "0x942c1d9ba70539c464761f47cbc7791748c6d6f770e9359d639655bc52419a58",
+   "signed": "0x02f861830185d90380840bebc20082ea6080808c600180600b6000396000f300c080a09febdb2b9124e0dcfe294de098f47b832fbd115a2df926e43a451dabbc0355eda05ea5a37b45feda68466e888fe14dce0ad73edd5ef9e32ead89a7e8744a04fafc",
+   "hash": "0x7ebc290c660c7c0e1086ed2e18f9df236589f8a5836c657066ccdd6562c45315",
+   "parsed": {
+    "r": "0x9febdb2b9124e0dcfe294de098f47b832fbd115a2df926e43a451dabbc0355ed",
+    "s": "0x5ea5a37b45feda68466e888fe14dce0ad73edd5ef9e32ead89a7e8744a04fafc",
+    "v": "27",
+    "yParity": "0",
+    "chainId": "99801",
+    "type": "eip1559",
+    "gas": "60000",
+    "data": "0x600180600b6000396000f300",
+    "nonce": "3",
+    "maxFeePerGas": "200000000"
+   }
+  },
+  {
+   "name": "ArbSys.withdrawEth",
+   "fields": {
+    "type": "eip1559",
+    "chainId": "99801",
+    "nonce": "94",
+    "maxPriorityFeePerGas": "0",
+    "maxFeePerGas": "200200000",
+    "gas": "120000",
+    "to": "0x0000000000000000000000000000000000000064",
+    "value": "10000000000000000",
+    "data": "0x25e16063000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba9164",
+    "accessList": []
+   },
+   "unsigned": "0x02f852830185d95e80840beecf408301d4c0940000000000000000000000000000000000000064872386f26fc10000a425e16063000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba9164c0",
+   "signingHash": "0xbf8d55cd92d1c27dd56054347a3054f08a2096ca25d64fd9876d430d09f2824e",
+   "signed": "0x02f895830185d95e80840beecf408301d4c0940000000000000000000000000000000000000064872386f26fc10000a425e16063000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba9164c080a0a5b53b4fb85ec496195d1a74cd6b1053a38c0a6e7e1962b542e74d23353670f0a0302f0103b23680d4f7286d1a241ff5d3d6cb8f9e3c729ab5da920558a6ae7565",
+   "hash": "0x7c3a18bbe9261772b4516a00013287f7b4a04c574b775a94992a5b4e8ba6b246",
+   "parsed": {
+    "r": "0xa5b53b4fb85ec496195d1a74cd6b1053a38c0a6e7e1962b542e74d23353670f0",
+    "s": "0x302f0103b23680d4f7286d1a241ff5d3d6cb8f9e3c729ab5da920558a6ae7565",
+    "v": "27",
+    "yParity": "0",
+    "chainId": "99801",
+    "type": "eip1559",
+    "to": "0x0000000000000000000000000000000000000064",
+    "gas": "120000",
+    "data": "0x25e16063000000000000000000000000a16a365ae8f34edadb8157849d4ace274bba9164",
+    "nonce": "94",
+    "value": "10000000000000000",
+    "maxFeePerGas": "200200000"
+   }
+  },
+  {
+   "name": "legacy EIP-155 HYPE transfer",
+   "fields": {
+    "type": "legacy",
+    "chainId": "99801",
+    "nonce": "1",
+    "gasPrice": "100100000",
+    "gas": "21173",
+    "to": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "value": "1",
+    "data": "0x"
+   },
+   "unsigned": "0xe6018405f767a08252b5948499e50474b6e8c988b232f52583439abf37a8a10180830185d98080",
+   "signingHash": "0xf7d36919a53a7b0a2693a3f4e270233dff88fdfa9bc9518516df7cb0de3d71a1",
+   "signed": "0xf866018405f767a08252b5948499e50474b6e8c988b232f52583439abf37a8a1018083030bd6a02ce606aad296cbc2127658eff833f10014c768a6d317c7afd7bc007639b0000aa03e1d720af4102d98e24bf6500623fb232821d3130c6e44b570fb241771e20888",
+   "hash": "0x19489f2d370a19c06c1b15d0e71ce62490aae443d68820b7ac1c70808cc9cef6",
+   "parsed": {
+    "type": "legacy",
+    "to": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+    "gas": "21173",
+    "nonce": "1",
+    "value": "1",
+    "gasPrice": "100100000",
+    "chainId": "99801",
+    "v": "199638",
+    "s": "0x3e1d720af4102d98e24bf6500623fb232821d3130c6e44b570fb241771e20888",
+    "r": "0x2ce606aad296cbc2127658eff833f10014c768a6d317c7afd7bc007639b0000a",
+    "yParity": "1"
+   }
+  }
+ ],
+ "create2": [
+  {
+   "deployer": "0x4e59b44847b379578588920ca78fbf26c0b4956c",
+   "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+   "initCode": "0x600180600b6000396000f300",
+   "initCodeHash": "0xcb1963366f7ea6d44b57d622bf398c866a281e620ae9631ab3c7dcdb02536cf1",
+   "address": "0x41aeebf02fb66aedd96056c5736a42c61a4ac738"
+  },
+  {
+   "deployer": "0xa16a365ae8f34edadb8157849d4ace274bba9164",
+   "salt": "0x0101010101010101010101010101010101010101010101010101010101010101",
+   "initCode": "0x",
+   "initCodeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+   "address": "0xead07239b956bf5db5e38bf4e9644a6e89af966a"
+  },
+  {
+   "deployer": "0x8499e50474b6e8c988b232f52583439abf37a8a1",
+   "salt": "0x000000000000000000000000000000000000000000000000000000000000002a",
+   "initCode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe",
+   "initCodeHash": "0xa97a1642af969e3fd07f7ccd0d9930ccf59184853f8ce6b625ac77d84f73242b",
+   "address": "0xdbf0d9471dd35b2a0d32e73d737f9a8aa2b2047a"
+  },
+  {
+   "deployer": "0xca11bde05977b3631167028862be2a173976ca11",
+   "salt": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+   "initCode": "0x00",
+   "initCodeHash": "0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a",
+   "address": "0xe85938f4b439f36a1e06d29d5a651f5298360bbd"
+  }
+ ]
+}

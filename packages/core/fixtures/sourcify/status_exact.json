@@ -1,0 +1,7 @@
+{
+ "source": "Conduit's Sourcify, recorded verbatim 2026-10-25",
+ "method": "GET",
+ "url": "https://contracts.conduit.xyz/v2/contract/99801/0xD5f63c6f776555BA0b5976408d4F4be2Ec5B6FdB",
+ "status": 200,
+ "body": "{\"matchId\":\"475585\",\"creationMatch\":\"exact_match\",\"runtimeMatch\":\"exact_match\",\"verifiedAt\":\"2026-10-25T08:38:44Z\",\"match\":\"exact_match\",\"chainId\":\"99801\",\"address\":\"0xD5f63c6f776555BA0b5976408d4F4be2Ec5B6FdB\"}"
+}

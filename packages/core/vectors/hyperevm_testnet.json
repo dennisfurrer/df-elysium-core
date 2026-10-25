@@ -1,0 +1,1037 @@
+{
+ "source": "HyperEVM testnet (chain 998), https://rpc.hyperliquid-testnet.xyz/evm, Elysium's parent: eth_call to each view of Elysium's rollup contracts at latest, answers kept verbatim with method, params and HTTP status, captured 2026-10-25. Addresses from SequencerInbox.rollup() and Rollup's getters: Rollup (BoLD) 0xEbf08e34941fd93a0Fc1cD89dbBF7447267039Df, Bridge 0x36dAbc3CEE2E1084B7d04c8015Ef68Cac78f4f37, Inbox 0x11178Df40CBf87a4343f4B3F8B09B366ceFA8Ec0, Outbox 0x87391D602aaffB3Fe8051EcCDb75d6EEe8C31060, SequencerInbox 0xb5B1a0AebfFeF819Ec3F8c39a17b5C4E70A001E3. Signatures as OffchainLabs/nitro-contracts (main) declares them, interface return types written as address; calldata from cast 1.8.3, decoded with cast 1.8.3 abi-decode --json. Bridge.nativeToken() and nativeTokenDecimals() revert: HYPE, the parent's own coin, is the bridged gas token, so this is the native (ETH-style) bridge, not a fee-token one.",
+ "calls": [
+  {
+   "contract": "Rollup",
+   "name": "inbox",
+   "signature": "inbox() view returns (IInboxBase)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xfb0e722b"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000011178df40cbf87a4343f4b3f8b09b366cefa8ec0\"}",
+   "decoded": [
+    "0x11178Df40CBf87a4343f4B3F8B09B366ceFA8Ec0"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "outbox",
+   "signature": "outbox() view returns (IOutbox)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xce11e6ab"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000087391d602aaffb3fe8051eccdb75d6eee8c31060\"}",
+   "decoded": [
+    "0x87391D602aaffB3Fe8051EcCDb75d6EEe8C31060"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "bridge",
+   "signature": "bridge() view returns (IBridge)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xe78cea92"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000036dabc3cee2e1084b7d04c8015ef68cac78f4f37\"}",
+   "decoded": [
+    "0x36dAbc3CEE2E1084B7d04c8015Ef68Cac78f4f37"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "sequencerInbox",
+   "signature": "sequencerInbox() view returns (ISequencerInbox)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xee35f327"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000b5b1a0aebffef819ec3f8c39a17b5c4e70a001e3\"}",
+   "decoded": [
+    "0xb5B1a0AebfFeF819Ec3F8c39a17b5C4E70A001E3"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "rollupEventInbox",
+   "signature": "rollupEventInbox() view returns (IRollupEventInbox)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xaa38a6e7"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000005ad7539049ba2184be320977b866a6341f4a5f1c\"}",
+   "decoded": [
+    "0x5ad7539049Ba2184Be320977B866a6341f4A5F1C"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "challengeManager",
+   "signature": "challengeManager() view returns (IEdgeChallengeManager)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x023a96fe"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000754429325cf02835ca17fcfba9fc059cb2835b6\"}",
+   "decoded": [
+    "0x0754429325CF02835CA17FcFBa9fc059cb2835B6"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "chainId",
+   "signature": "chainId() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x9a8a0592"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000000000000000000000000000000000000000185d9\"}",
+   "decoded": [
+    "99801"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "confirmPeriodBlocks",
+   "signature": "confirmPeriodBlocks() view returns (uint64)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x2e7acfa6"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000000000000000000a\"}",
+   "decoded": [
+    10
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "baseStake",
+   "signature": "baseStake() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x76e7e23b"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000016345785d8a0000\"}",
+   "decoded": [
+    "100000000000000000"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "stakeToken",
+   "signature": "stakeToken() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x51ed6a30"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000005555555555555555555555555555555555555555\"}",
+   "decoded": [
+    "0x5555555555555555555555555555555555555555"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "latestConfirmed",
+   "signature": "latestConfirmed() view returns (bytes32)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x65f7f80d"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0xa410e52a72e7f4e0e39f512d511b5e454c00187f24ae7df7155282720437b075\"}",
+   "decoded": [
+    "0xa410e52a72e7f4e0e39f512d511b5e454c00187f24ae7df7155282720437b075"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "owner",
+   "signature": "owner() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x8da5cb5b"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000340a301a4e26349d8acb09b90734749d94293bff\"}",
+   "decoded": [
+    "0x340a301a4e26349d8acB09b90734749D94293bFF"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "wasmModuleRoot",
+   "signature": "wasmModuleRoot() view returns (bytes32)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x8ee1a126"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0xc10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97\"}",
+   "decoded": [
+    "0xc10cd7ec6acaf1c441a3f6bd0900ad20f15855ba775a96f1939118cbc629dc97"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "genesisAssertionHash",
+   "signature": "genesisAssertionHash() pure returns (bytes32)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x353325e0"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x75c2df1d9a6f98d1de62c8fc955f91b87f16fefa2fafe4d6b52118fc30e1c278\"}",
+   "decoded": [
+    "0x75c2df1d9a6f98d1de62c8fc955f91b87f16fefa2fafe4d6b52118fc30e1c278"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "loserStakeEscrow",
+   "signature": "loserStakeEscrow() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xf065de3f"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000663d8ab001e5768b9197d97cadd6822bd08c3628\"}",
+   "decoded": [
+    "0x663d8ab001E5768b9197d97CaDD6822bD08C3628"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "validatorWhitelistDisabled",
+   "signature": "validatorWhitelistDisabled() view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x12ab3d3b"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    false
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "minimumAssertionPeriod",
+   "signature": "minimumAssertionPeriod() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x45e38b64"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000001\"}",
+   "decoded": [
+    "1"
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "validatorAfkBlocks",
+   "signature": "validatorAfkBlocks() view returns (uint64)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xe6b3082c"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000004000000000000\"}",
+   "decoded": [
+    1125899906842624
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "getAssertion",
+   "signature": "getAssertion(bytes32 assertionHash) view returns (AssertionNode memory)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0x88302884a410e52a72e7f4e0e39f512d511b5e454c00187f24ae7df7155282720437b075"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040b4a7e00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002e95b93f37f71e62da98ed86e8a11f05cbb812f966dd65cf446cf5014e2f07ab2\"}",
+   "decoded": [
+    [
+     0,
+     0,
+     67848830,
+     true,
+     2,
+     "0xe95b93f37f71e62da98ed86e8a11f05cbb812f966dd65cf446cf5014e2f07ab2"
+    ]
+   ]
+  },
+  {
+   "contract": "Rollup",
+   "name": "isPending",
+   "signature": "isPending(bytes32 assertionHash) view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xebf08e34941fd93a0fc1cd89dbbf7447267039df",
+     "data": "0xe531d8c7a410e52a72e7f4e0e39f512d511b5e454c00187f24ae7df7155282720437b075"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    false
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "rollup",
+   "signature": "rollup() view returns (IOwnable)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xcb23bcb5"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000ebf08e34941fd93a0fc1cd89dbbf7447267039df\"}",
+   "decoded": [
+    "0xEbf08e34941fd93a0Fc1cD89dbBF7447267039Df"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "sequencerInbox",
+   "signature": "sequencerInbox() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xee35f327"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000b5b1a0aebffef819ec3f8c39a17b5c4e70a001e3\"}",
+   "decoded": [
+    "0xb5B1a0AebfFeF819Ec3F8c39a17b5C4E70A001E3"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "delayedMessageCount",
+   "signature": "delayedMessageCount() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xeca067ad"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000000000000016cc8a\"}",
+   "decoded": [
+    "1494154"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "sequencerMessageCount",
+   "signature": "sequencerMessageCount() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0x0084120c"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000d71\"}",
+   "decoded": [
+    "3441"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "sequencerReportedSubMessageCount",
+   "signature": "sequencerReportedSubMessageCount() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0x5fca4a16"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000ee6a51\"}",
+   "decoded": [
+    "15624785"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "activeOutbox",
+   "signature": "activeOutbox() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xab5d8943"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0x0000000000000000000000000000000000000000"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "nativeToken",
+   "signature": "nativeToken() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xe1758bd8"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":{\"code\":3,\"message\":\"execution reverted\"}}",
+   "reverted": true
+  },
+  {
+   "contract": "Bridge",
+   "name": "nativeTokenDecimals",
+   "signature": "nativeTokenDecimals() view returns (uint8)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xad48cb5e"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":{\"code\":3,\"message\":\"execution reverted\"}}",
+   "reverted": true
+  },
+  {
+   "contract": "Bridge",
+   "name": "allowedDelayedInboxList",
+   "signature": "allowedDelayedInboxList(uint256) view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xe76f5c8d0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000011178df40cbf87a4343f4b3f8b09b366cefa8ec0\"}",
+   "decoded": [
+    "0x11178Df40CBf87a4343f4B3F8B09B366ceFA8Ec0"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "allowedOutboxList",
+   "signature": "allowedOutboxList(uint256) view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0x945e11470000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000087391d602aaffb3fe8051eccdb75d6eee8c31060\"}",
+   "decoded": [
+    "0x87391D602aaffB3Fe8051EcCDb75d6EEe8C31060"
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "allowedDelayedInboxes",
+   "signature": "allowedDelayedInboxes(address inbox) view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0xae60bd1300000000000000000000000011178df40cbf87a4343f4b3f8b09b366cefa8ec0"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000001\"}",
+   "decoded": [
+    true
+   ]
+  },
+  {
+   "contract": "Bridge",
+   "name": "allowedOutboxes",
+   "signature": "allowedOutboxes(address outbox) view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x36dabc3cee2e1084b7d04c8015ef68cac78f4f37",
+     "data": "0x413b35bd00000000000000000000000087391d602aaffb3fe8051eccdb75d6eee8c31060"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000001\"}",
+   "decoded": [
+    true
+   ]
+  },
+  {
+   "contract": "Inbox",
+   "name": "bridge",
+   "signature": "bridge() view returns (IBridge)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+     "data": "0xe78cea92"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000036dabc3cee2e1084b7d04c8015ef68cac78f4f37\"}",
+   "decoded": [
+    "0x36dAbc3CEE2E1084B7d04c8015Ef68Cac78f4f37"
+   ]
+  },
+  {
+   "contract": "Inbox",
+   "name": "sequencerInbox",
+   "signature": "sequencerInbox() view returns (ISequencerInbox)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+     "data": "0xee35f327"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000b5b1a0aebffef819ec3f8c39a17b5c4e70a001e3\"}",
+   "decoded": [
+    "0xb5B1a0AebfFeF819Ec3F8c39a17b5C4E70A001E3"
+   ]
+  },
+  {
+   "contract": "Inbox",
+   "name": "maxDataSize",
+   "signature": "maxDataSize() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+     "data": "0xe8eb1dc3"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000000000000001cccc\"}",
+   "decoded": [
+    "117964"
+   ]
+  },
+  {
+   "contract": "Inbox",
+   "name": "allowListEnabled",
+   "signature": "allowListEnabled() view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+     "data": "0x22bd5c1c"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    false
+   ]
+  },
+  {
+   "contract": "Inbox",
+   "name": "isAllowed",
+   "signature": "isAllowed(address user) view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x11178df40cbf87a4343f4b3f8b09b366cefa8ec0",
+     "data": "0xbabcc539000000000000000000000000b42125c7d54e666f4e76aabbec8fe5fdd7281028"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    false
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "rollup",
+   "signature": "rollup() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0xcb23bcb5"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000ebf08e34941fd93a0fc1cd89dbbf7447267039df\"}",
+   "decoded": [
+    "0xEbf08e34941fd93a0Fc1cD89dbBF7447267039Df"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "bridge",
+   "signature": "bridge() view returns (IBridge)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0xe78cea92"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000036dabc3cee2e1084b7d04c8015ef68cac78f4f37\"}",
+   "decoded": [
+    "0x36dAbc3CEE2E1084B7d04c8015Ef68Cac78f4f37"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "OUTBOX_VERSION",
+   "signature": "OUTBOX_VERSION() view returns (uint128)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0xc75184df"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000002\"}",
+   "decoded": [
+    "2"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "l2ToL1Sender",
+   "signature": "l2ToL1Sender() view returns (address)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0x80648b02"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0x0000000000000000000000000000000000000000"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "l2ToL1Block",
+   "signature": "l2ToL1Block() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0x46547790"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "l2ToL1EthBlock",
+   "signature": "l2ToL1EthBlock() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0x8515bc6a"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "l2ToL1Timestamp",
+   "signature": "l2ToL1Timestamp() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0xb0f30537"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0"
+   ]
+  },
+  {
+   "contract": "Outbox",
+   "name": "l2ToL1OutputId",
+   "signature": "l2ToL1OutputId() view returns (bytes32)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0x87391d602aaffb3fe8051eccdb75d6eee8c31060",
+     "data": "0x72f2a8c7"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0x0000000000000000000000000000000000000000000000000000000000000000"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "bridge",
+   "signature": "bridge() view returns (IBridge)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xe78cea92"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x00000000000000000000000036dabc3cee2e1084b7d04c8015ef68cac78f4f37\"}",
+   "decoded": [
+    "0x36dAbc3CEE2E1084B7d04c8015Ef68Cac78f4f37"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "rollup",
+   "signature": "rollup() view returns (IOwnable)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xcb23bcb5"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000ebf08e34941fd93a0fc1cd89dbbf7447267039df\"}",
+   "decoded": [
+    "0xEbf08e34941fd93a0Fc1cD89dbBF7447267039Df"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "totalDelayedMessagesRead",
+   "signature": "totalDelayedMessagesRead() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x7fa3a40e"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000000000000016c924\"}",
+   "decoded": [
+    "1493284"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "batchCount",
+   "signature": "batchCount() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x06f13056"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000d71\"}",
+   "decoded": [
+    "3441"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "maxTimeVariation",
+   "signature": "maxTimeVariation() view returns (uint256 delayBlocks, uint256 futureBlocks, uint256 delaySeconds, uint256 futureSeconds)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xebea461d"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000010e00000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000151800000000000000000000000000000000000000000000000000000000000000e10\"}",
+   "decoded": [
+    "69120",
+    "48",
+    "86400",
+    "3600"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "maxDataSize",
+   "signature": "maxDataSize() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xe8eb1dc3"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x000000000000000000000000000000000000000000000000000000000001cccc\"}",
+   "decoded": [
+    "117964"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "isUsingFeeToken",
+   "signature": "isUsingFeeToken() view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x92d9f782"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    false
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "isDelayBufferable",
+   "signature": "isDelayBufferable() view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x4b678a66"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000001\"}",
+   "decoded": [
+    true
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "HEADER_LENGTH",
+   "signature": "HEADER_LENGTH() view returns (uint256)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x27957a49"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000028\"}",
+   "decoded": [
+    "40"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "DAS_MESSAGE_HEADER_FLAG",
+   "signature": "DAS_MESSAGE_HEADER_FLAG() view returns (bytes1)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xf60a5091"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x8000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0x80"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "DATA_AUTHENTICATED_FLAG",
+   "signature": "DATA_AUTHENTICATED_FLAG() view returns (bytes1)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0xe5a358c8"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x4000000000000000000000000000000000000000000000000000000000000000\"}",
+   "decoded": [
+    "0x40"
+   ]
+  },
+  {
+   "contract": "SequencerInbox",
+   "name": "isBatchPoster",
+   "signature": "isBatchPoster(address) view returns (bool)",
+   "method": "eth_call",
+   "params": [
+    {
+     "to": "0xb5b1a0aebffef819ec3f8c39a17b5c4e70a001e3",
+     "data": "0x71c3e6fe000000000000000000000000b42125c7d54e666f4e76aabbec8fe5fdd7281028"
+    },
+    "latest"
+   ],
+   "status": 200,
+   "answer": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"0x0000000000000000000000000000000000000000000000000000000000000001\"}",
+   "decoded": [
+    true
+   ]
+  }
+ ]
+}

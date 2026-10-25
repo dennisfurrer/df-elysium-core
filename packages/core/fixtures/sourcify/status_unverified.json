@@ -1,0 +1,7 @@
+{
+ "source": "Conduit's Sourcify, recorded verbatim 2026-10-25",
+ "method": "GET",
+ "url": "https://contracts.conduit.xyz/v2/contract/99801/0x0000000000000000000000000000000000000001",
+ "status": 404,
+ "body": "{\"match\":null,\"creationMatch\":null,\"runtimeMatch\":null,\"chainId\":\"99801\",\"address\":\"0x0000000000000000000000000000000000000001\"}"
+}

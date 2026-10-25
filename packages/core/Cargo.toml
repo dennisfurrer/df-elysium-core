@@ -1,0 +1,91 @@
+[package]
+name = "df-elysium-core"
+description = "Elysium SDK for Rust on df-hyperliquid-core: Nitro JSON-RPC, ArbOS precompiles, gas, HyperEVM bridging, deploys and polling, with exact amounts and signing. Native and wasm."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+df-hyperliquid-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[features]
+default = ["sign", "native"]
+# Signing and recovery. Without it, transactions build and hash but nothing signs.
+sign = ["df-hyperliquid-core/sign"]
+# HTTP for native programs (reqwest), from df-hyperliquid-core.
+native = ["df-hyperliquid-core/native"]
+# HTTP for the browser and Workers (fetch), from df-hyperliquid-core.
+web = ["df-hyperliquid-core/web"]
+# The transports refuse a raw transaction before it goes out (`TransportError::Offline`). For a
+# dependent's test build, as a dev-dependency feature, so no test can move money.
+offline = ["df-hyperliquid-core/offline"]
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[[example]]
+name = "fees"
+required-features = ["native"]
+
+[[example]]
+name = "send_hype"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "transactions"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "erc20"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "deploy"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "bridge_out"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "chain"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "multicall"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "follow"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "stylus"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "verify"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "bridge_in"
+required-features = ["native", "sign"]
+
+[[example]]
+name = "retryable"
+required-features = ["native", "sign"]

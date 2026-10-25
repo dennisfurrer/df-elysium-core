@@ -1,0 +1,7 @@
+{
+ "source": "Conduit's Sourcify, recorded verbatim 2026-10-25",
+ "method": "GET",
+ "url": "https://contracts.conduit.xyz/v2/verify/00000000-0000-0000-0000-000000000000",
+ "status": 404,
+ "body": "{\"customCode\":\"job_not_found\",\"message\":\"No verification job found for id 00000000-0000-0000-0000-000000000000\",\"errorId\":\"baf4b11f-b83d-4932-bf1d-b5581c03ce08\"}"
+}

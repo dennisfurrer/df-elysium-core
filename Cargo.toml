@@ -1,0 +1,39 @@
+[workspace]
+resolver = "3"
+members = ["packages/core"]
+
+[workspace.package]
+version = "0.0.1-beta"
+edition = "2024"
+rust-version = "1.94"
+license = "BUSL-1.1"
+authors = ["Dennis Furrer"]
+homepage = "https://dfurrer.com"
+readme = "README.md"
+keywords = ["elysium", "hyperliquid", "hyperevm", "arbitrum", "sdk"]
+categories = ["api-bindings", "cryptography::cryptocurrencies", "wasm"]
+
+[workspace.dependencies]
+df-hyperliquid-core = { version = "0.0.10-beta", default-features = false }
+
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+thiserror = "2.0.21"
+tokio = { version = "1.53.1", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+
+[workspace.lints.clippy]
+# HYPE and token amounts are exact integers and decimals.
+float_arithmetic = "deny"
+# A panic kills a Worker isolate or the browser app.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+float_cmp = "warn"

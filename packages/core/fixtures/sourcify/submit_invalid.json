@@ -1,0 +1,8 @@
+{
+ "source": "Conduit's Sourcify, recorded verbatim 2026-10-25",
+ "method": "POST",
+ "url": "https://contracts.conduit.xyz/v2/verify/99801/0x0000000000000000000000000000000000000001",
+ "status": 400,
+ "body": "{\"customCode\":\"invalid_parameter\",\"message\":\"request/body must have required property 'stdJsonInput'\",\"errorId\":\"617d51a0-59f9-422c-9a02-a86795ec5b48\"}",
+ "sent": "{}"
+}
