@@ -1,0 +1,16 @@
+wasm := "target/wasm32-unknown-unknown/release/elysium_reference_app.wasm"
+
+# The site, into dist/: the app compiled to wasm, its bindings, the page and its styles.
+build:
+    cargo build --release --target wasm32-unknown-unknown
+    wasm-bindgen --target web --no-typescript --out-dir dist --out-name app {{wasm}}
+    -wasm-opt -Oz --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext --enable-mutable-globals --enable-reference-types --enable-multivalue --strip-producers --strip-target-features dist/app_bg.wasm -o dist/app_bg.wasm
+    cp index.html style.css dist/
+
+# Builds, then serves dist/ on http://localhost:8080.
+serve: build
+    python3 -m http.server 8080 --directory dist
+
+check:
+    cargo fmt --check
+    cargo clippy --target wasm32-unknown-unknown -- -D warnings

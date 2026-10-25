@@ -1,6 +1,8 @@
 [workspace]
 resolver = "3"
 members = ["packages/core"]
+# The reference app is its own workspace: a Leptos site that builds for the browser only.
+exclude = ["packages/core/examples/reference-app"]
 
 [workspace.package]
 version = "0.0.1-beta"

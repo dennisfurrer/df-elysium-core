@@ -96,6 +96,10 @@ Each runs against Elysium testnet. The ones that move funds sign with `ELYSIUM_T
 | `cargo run -p df-elysium-core --example stylus -- --program 0x..` | Stylus's parameters, and a program's version, time left and activation quote |
 | `cargo run -p df-elysium-core --example verify -- --address 0x..` | A contract's verification on Conduit's Sourcify; with `--input`, `--compiler` and `--contract`, submits it and waits for the job |
 
+## Reference app
+
+[`packages/core/examples/reference-app`](packages/core/examples/reference-app) is all of the above in one page in the browser: Leptos client side, the SDK over `fetch`, a burner key or the browser's wallet. `just serve` there builds it and serves it on http://localhost:8080.
+
 ## Tests
 
 ```text

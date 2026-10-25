@@ -1,0 +1,355 @@
+/* Atlas's tokens: flat, hairline edges, colour only for meaning. */
+:root {
+  color-scheme: dark;
+
+  --bg-base: #0a0d10;
+  --bg-panel: #0f1318;
+  --bg-elevated: #13181f;
+  --bg-inset: #070a0d;
+
+  --border-hairline: #1f262e;
+  --border-subtle: #141a21;
+  --border-active: #00e5ff;
+
+  --text: #e5e9ee;
+  --text-muted: #8b95a3;
+  --text-dim: #586270;
+
+  --cyan: #00e5ff;
+  --cyan-fill: #0e3a44;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --crit: #ef4444;
+
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* 4px base */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+
+  /* type: 10 labels, 12 values and inputs, 13 body, 15 brand */
+  --t-label: 10px;
+  --t-value: 12px;
+  --t-body: 13px;
+  --t-brand: 15px;
+
+  --r-input: 2px;
+  --r-button: 4px;
+  --r-panel: 4px;
+
+  --control: 32px;
+  --control-small: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg-base);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.warn {
+  color: var(--warn);
+}
+
+.crit {
+  color: var(--crit);
+}
+
+.busy {
+  color: var(--text-muted);
+}
+
+.select {
+  user-select: all;
+  word-break: break-all;
+}
+
+/* Top bar */
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  height: 48px;
+  padding: 0 var(--s4);
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.brand-name {
+  font-size: var(--t-brand);
+  font-weight: 600;
+}
+
+.tag {
+  padding: 0 var(--s1);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--r-input);
+  color: var(--text-muted);
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 16px;
+}
+
+.top-right {
+  display: flex;
+  gap: var(--s3);
+  font-size: var(--t-value);
+  white-space: nowrap;
+}
+
+/* Panels flow into columns: one at 375px, two from 768px, three from 1200px. */
+
+.grid {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--s4);
+  column-gap: var(--s3);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid {
+    columns: 3;
+  }
+}
+
+.panel {
+  break-inside: avoid;
+  margin-bottom: var(--s3);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--r-panel);
+}
+
+.panel-title,
+.part,
+.field-label {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  height: var(--control);
+  padding: 0 var(--s3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  padding: var(--s3);
+}
+
+.part {
+  margin-top: var(--s2);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-dim);
+}
+
+.panel-body > .part:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* A labelled value */
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  min-height: 20px;
+}
+
+.row-label {
+  flex: none;
+  color: var(--text-muted);
+  font-size: var(--t-value);
+}
+
+.row-value {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-value);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* A line in a list: an activity, a withdrawal, a ticket */
+
+.entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s1) var(--s3);
+  min-height: var(--control-small);
+  font-family: var(--font-mono);
+  font-size: var(--t-value);
+}
+
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--t-value);
+  overflow-wrap: anywhere;
+}
+
+.status {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-value);
+  overflow-wrap: anywhere;
+}
+
+/* Inputs */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.input {
+  width: 100%;
+  height: var(--control);
+  padding: 0 var(--s2);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--r-input);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--t-value);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-dim);
+}
+
+.input:focus {
+  border-color: var(--border-active);
+}
+
+/* Buttons */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control);
+  padding: 0 var(--s3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--r-button);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--t-value);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--text-dim);
+  text-decoration: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button.primary {
+  background: var(--cyan-fill);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.button.small {
+  height: var(--control-small);
+  padding: 0 var(--s2);
+}
+
+/* The live feed */
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: var(--t-value);
+  font-variant-numeric: tabular-nums;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

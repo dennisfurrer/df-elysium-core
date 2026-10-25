@@ -1,6 +1,6 @@
 set dotenv-load
 
-check: fmt clippy wasm test features doc
+check: fmt clippy wasm test features doc app
 
 fmt:
     cargo fmt --all --check
@@ -43,3 +43,7 @@ features:
 
 doc:
     RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --all-features
+
+# The reference app, its own workspace: formatted, and clippy clean for the browser.
+app:
+    cd packages/core/examples/reference-app && just check
