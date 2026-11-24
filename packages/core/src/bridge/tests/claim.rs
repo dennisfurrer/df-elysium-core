@@ -143,7 +143,8 @@ fn an_assertion_created_log_names_the_block_and_send_root_it_confirms() {
     ] {
         assert_eq!(event.topic().to_hex(), text(&self::event_topic(&file, prefix)), "{prefix}");
     }
-    let wrong = Log { topics: vec![SEND_ROOT_UPDATED.topic()], ..log };
+    let mut wrong = log;
+    wrong.topics = vec![SEND_ROOT_UPDATED.topic()];
     assert!(read_assertion_created(&wrong).is_err(), "another event's log");
 }
 

@@ -311,7 +311,7 @@ dependencies = [
 
 [[package]]
 name = "df-elysium-core"
-version = "0.0.2-beta"
+version = "0.0.3-beta"
 dependencies = [
  "df-hyperliquid-core",
  "serde",
@@ -321,9 +321,9 @@ dependencies = [
 
 [[package]]
 name = "df-hyperliquid-core"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6183cff86799be50aae8fba276791e33040c0a700cbf1d95c8fc882300d50260"
+checksum = "4cb2b161336e55f41cc28091dea5b50861b8d7461495953ba9c80a294157d1b2"
 dependencies = [
  "getrandom 0.2.17",
  "js-sys",

@@ -70,7 +70,8 @@ fn a_send_reads_as_viem_read_it_and_nothing_else_reads_as_one() {
     assert_eq!(send.timestamp.to_string(), text(&said["timestamp"]));
     assert_eq!(send.value.to_string(), text(&said["callvalue"]));
     assert_eq!(hex::encode_prefixed(&send.data), text(&said["data"]));
-    let elsewhere = Log { address: Address::ZERO, ..log.clone() };
+    let mut elsewhere = log.clone();
+    elsewhere.address = Address::ZERO;
     assert!(Withdrawal::from_log(&elsewhere).is_err(), "only ArbSys writes them");
     let update = file["events"]
         .as_array()

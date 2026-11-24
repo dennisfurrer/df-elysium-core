@@ -75,19 +75,16 @@ fn every_event_viem_decoded_reads_the_same_here() {
 fn a_log_of_another_event_or_cut_short_is_refused() {
     let event = Event::new("Ping(uint256)", "uint256 indexed id");
     let other = Event::new("Pong(uint256)", "uint256 indexed id");
-    let log = Log {
-        address: crate::utils::Address::ZERO,
-        topics: vec![other.topic(), crate::B256::ZERO],
-        data: Vec::new(),
-        block_number: None,
-        block_hash: None,
-        transaction_hash: None,
-        transaction_index: None,
-        log_index: None,
-        removed: false,
-    };
+    // A log as a node answers it, with only the fields the decoder reads.
+    let log: Log = serde_json::from_value(serde_json::json!({
+        "address": "0x0000000000000000000000000000000000000000",
+        "topics": [other.topic().to_hex(), crate::B256::ZERO.to_hex()],
+        "data": "0x",
+    }))
+    .unwrap();
     assert_eq!(event.decode(&log), Err(BadLog::NotThisEvent("Ping")));
-    let short = Log { topics: vec![event.topic()], ..log };
+    let mut short = log;
+    short.topics = vec![event.topic()];
     assert!(matches!(event.decode(&short), Err(BadLog::Abi { event: "Ping", .. })), "its indexed id is missing");
     assert_eq!(event.name(), "Ping");
 }
