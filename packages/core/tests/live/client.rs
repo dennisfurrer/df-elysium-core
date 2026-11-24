@@ -41,7 +41,8 @@ async fn the_chain_its_accounts_and_its_gas_read_as_recorded() {
     assert!(client.code(MULTICALL3).await.unwrap().len() > 1_000);
     assert!(client.code(df_elysium_core::transfer::PERMIT2).await.unwrap().len() > 1_000);
     assert!(client.code(df_elysium_core::deploy::CREATE2_DEPLOYER).await.unwrap().len() > 10);
-    assert_eq!(client.code(address("0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed")).await, Ok(Vec::new()), "no CreateX");
+    let createx = client.code(address("0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed")).await.unwrap();
+    assert!(createx.len() > 1_000, "CreateX is deployed at its usual address");
 
     let transfer = Call { to: Some(address(GUARDIAN)), value: U256::ONE, data: Vec::new() };
     let estimate = client.estimate(Some(operator), &transfer).await.unwrap();

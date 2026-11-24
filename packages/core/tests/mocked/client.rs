@@ -43,7 +43,11 @@ async fn the_chain_its_accounts_and_its_gas_read_as_testnet_answered() {
     assert_eq!(client.code(df_elysium_core::nitro::ARB_SYS).await, Ok(vec![0xfe]), "a precompile's code is 0xfe");
     let multicall = client.code(df_elysium_core::transfer::multicall::MULTICALL3).await.unwrap();
     assert!(multicall.len() > 1_000, "Multicall3 is predeployed");
-    assert_eq!(client.code(address("0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed")).await, Ok(Vec::new()), "no CreateX");
+    assert_eq!(
+        client.code(address("0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed")).await,
+        Ok(Vec::new()),
+        "no CreateX when this was recorded"
+    );
     assert_eq!(
         client.run(queries::client_version()).await.unwrap(),
         "nitro/vlocal+unknown-unknown/linux-amd64/go1.25.12"

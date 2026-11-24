@@ -1,7 +1,8 @@
 //! Contracts on Elysium: a creation and where it lands (CREATE from the sender's nonce, CREATE2
 //! through the deterministic deployer at its usual address), Stylus programs activated after
 //! they are deployed ([`crate::nitro::wasm`]), and source verification on Conduit's Sourcify
-//! ([`verify`]). CreateX is not deployed.
+//! ([`verify`]). CreateX is deployed at its usual address,
+//! `0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed`.
 //!
 //! Elysium runs current EVM semantics: Kinetiq's own contracts verify with solc 0.8.37,
 //! `evmVersion` osaka.
