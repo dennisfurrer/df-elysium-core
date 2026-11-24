@@ -44,24 +44,21 @@ df-elysium-core
 ```
 
 ```mermaid
-flowchart TB
+graph TB
     app["<b>your app</b>"]
 
     subgraph sdk ["df-elysium-core"]
-        direction TB
         domains["<b>nitro, gas, transfer</b><br/><b>bridge, deploy, live</b><br/>reads and calls"]
         client["<b>client</b><br/>sign, send, Nitro's RPC"]
     end
 
     subgraph hl ["df-hyperliquid-core"]
-        direction LR
         evm["<b>client::evm</b><br/>RPC, ABI, RLP, EIP-1559"]
         keys["<b>account</b><br/>keys, signatures"]
         utils["<b>utils</b><br/>decimals, hex, keccak"]
     end
 
     subgraph chains ["Elysium and HyperEVM"]
-        direction LR
         elysium["<b>Elysium</b><br/>99801"]
         hyperevm["<b>HyperEVM</b><br/>998: rollup, inbox, outbox"]
     end
